@@ -1,0 +1,10 @@
+.widgetButton{
+    border: 2px rgba(128, 128, 128, 0.351) dashed;
+    color: rgba(128, 128, 128, 0.351);
+    font-weight: 500;
+}
+
+.widgetButton:hover{
+    border-color: rgb(31, 111, 231);
+    color: rgb(31, 111, 231);
+}
