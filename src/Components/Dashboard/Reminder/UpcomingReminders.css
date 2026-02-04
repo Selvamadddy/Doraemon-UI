@@ -1,0 +1,11 @@
+.viewAllButton{
+    color: rgb(43 124 238);
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.viewAllButton:hover{
+    border-color: white;
+    background-color: transparent;
+    color: blue;
+}
