@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import menuBarReducer from "./Slices/MenuBarSlice";
+import chatSlice from "./Slices/ChatSlice"
 
 export const store = configureStore({
   devTools: false,
   reducer: {
-    menuBar: menuBarReducer
+    menuBar: menuBarReducer,
+    chat: chatSlice
   }
 });
 

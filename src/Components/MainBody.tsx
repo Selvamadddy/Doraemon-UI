@@ -4,7 +4,7 @@ import Dashboard from "./Dashboard/Dashboard";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import type { RootState } from "../ReduxManager/Store";
-import ChatScreen from "./ChatBot/ChatScreen";
+import ChatPage from "./ChatBot/ChatPage";
 
 export default function MainBody() {
     const menuBarStatus = useSelector(
@@ -38,7 +38,7 @@ export default function MainBody() {
     const screen = () =>{
         switch(menuBarStatus.selectedMenu){
             case 'Chat with me' :
-                return <ChatScreen />
+                return <ChatPage />
             default :
                 return  <Dashboard />
         }

@@ -36,7 +36,9 @@ export default function ReminderItem({ isChecked, text, time, priority }: Remind
             onMouseOut={() => SetViewDelete(false)} onMouseOver={() => SetViewDelete(true)}>
 
             <div className="d-flex flex-row align-items-center justify-content-center">
-                <input className="me-2 form-check-input rounded-circle border border-3" type="checkbox" checked={isChecked} style={OnHoverCheckBoxStyle}></input>
+                <input className="me-2 form-check-input rounded-circle border border-3" type="checkbox" checked={isChecked} style={OnHoverCheckBoxStyle}
+                onChange={() => ""}
+                ></input>
                 <div>
                    {!isChecked ? <i className="p-0" style={OnHoverStyle}>{text}</i> : <s className="p-0" style={OnHoverStyle}>{text}</s> }
                    {!isChecked && <p>Due {formatDateTime(time)}</p>}
