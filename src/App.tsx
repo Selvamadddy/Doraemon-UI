@@ -3,6 +3,7 @@ import NavComp from './Components/Common/NavComp.tsx'
 import MainBody from './Components/MainBody.tsx'
 import { Provider } from 'react-redux';
 import { store } from './ReduxManager/Store.tsx';
+import "./Utils/ResponsiveUtility/Responsive.css"
 
 function App() {
   

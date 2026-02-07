@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../ReduxManager/Hooks/hooks";
 import { updateMenuBarSelection } from "../../ReduxManager/Slices/MenuBarSlice";
 
+import { useResponsive } from '../../Utils/ResponsiveUtility/useResponsive';
 
 interface MenuItemProps {
     icon: React.ReactNode;
@@ -19,6 +20,7 @@ interface MenuItemProps {
 function MenuItem({ icon, name, isExpand, isSelecetd, updateMenuBarState }: MenuItemProps) {
 
     const [isHover, setIsHover] = useState(false);
+    const { isMobile } = useResponsive();
 
     const menuStyle = {
         height: '7vh',
@@ -45,7 +47,7 @@ function MenuItem({ icon, name, isExpand, isSelecetd, updateMenuBarState }: Menu
     return (
         <>
             <div className='d-flex flex-row align-items-center' style={isSelecetd ? SelectedMenuStyle : menuStyle} onMouseEnter={() => setIsHover(true)}
-                onMouseLeave={() => setIsHover(false)} onClick={() => updateMenuBarState(false, name)} >
+                onMouseLeave={() => setIsHover(false)} onClick={() => updateMenuBarState((isMobile ? true : false) , name)} >
                 <i className={iconClass} style={{ paddingLeft: "1.5vw" }}> </i>
                 {isExpand && <span>{name}</span>}
             </div>
