@@ -1,0 +1,30 @@
+:root {
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-md: 16px;
+  --font-lg: 18px;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+  :root {
+    --font-md: 15px;
+    --font-lg: 17px;
+    --space-md: 12px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  :root {
+    --font-md: 14px;
+    --font-lg: 16px;
+    --space-md: 10px;
+    --space-lg: 16px;
+  }
+}

@@ -1,0 +1,16 @@
+.text-responsive {
+  font-size: var(--font-md);
+}
+
+.heading-responsive {
+  font-size: var(--font-lg);
+  font-weight: 500;
+}
+
+.p-responsive {
+  padding: var(--space-md);
+}
+
+.gap-responsive {
+  gap: var(--space-md);
+}

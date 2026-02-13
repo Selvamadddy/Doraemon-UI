@@ -1,0 +1,74 @@
+hide-on-mobile {
+  display: block; /* Visible by default on larger screens */
+}
+
+.profile-pic {
+    height : 7vh;
+}
+
+.profile-pic:hover {
+    border: 2px solid #fff;
+}
+
+.profile-menu{
+    top : 110%;
+    right : 0vw;
+    border-radius: 7px;
+    background-color :rgb(43, 121, 223);  
+    color: rgba(255, 255, 255, 0.586);
+}
+
+.profile-menu-option:hover{
+    color: white;
+}
+
+/* Styles for screens with a maximum width of 600px (or your chosen breakpoint) */
+@media screen and (max-width: 600px) {
+  .hide-on-mobile {
+    display: none; /* Hide the element on mobile screens */
+  }
+}
+
+
+.gif-container {
+  width: 57%;
+  overflow: hidden; /* Keeps the GIF inside the container boundaries */
+  position : absolute;
+  left: 30%;
+  top: 3px;
+}
+
+.moving-gif {
+  /* Start position: outside the right edge of the container */
+  transform: translateX(100%);
+  /* Define the animation 
+  animation: slideLeftToRight 15s linear infinite; */
+  animation: slideDisappear 15s linear forwards
+}
+
+/* Define the keyframes for the animation */
+@keyframes slideLeftToRight {
+  0% {
+    transform: translateX(-100vw); /* Start from outside the right viewport */
+  }
+  100% {
+    transform: translateX(100vw); /* End at outside the left viewport */
+  }
+}
+
+@keyframes slideDisappear {
+  0% {
+    transform: translateX(-100%);
+    opacity: 1;
+  }
+  90% {
+    /* Optional: keep it visible until near the very end */
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw);
+    opacity: 0;
+    /* Optional: modern browsers now allow transitioning 'display' */
+    display: none; 
+  }
+}

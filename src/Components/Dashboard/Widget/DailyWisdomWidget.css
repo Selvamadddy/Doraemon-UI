@@ -1,0 +1,63 @@
+.wisdom-card {
+  background: #ffffff;
+  border-radius: 2rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+.wisdom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.wisdom-title {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.quote-icon {
+  background: #facc15;
+  color: #0f172a;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* Quote */
+.wisdom-text {
+  margin-top: 1rem;
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.5;
+}
+
+/* Footer */
+.wisdom-footer {
+  margin-top: 1.25rem;
+}
+
+.wisdom-progress {
+  height: 4px;
+  background-color: #e5e7eb;
+}
+
+.wisdom-progress .progress-bar {
+  background-color: #2563eb;
+}
+
+.wisdom-percent {
+  font-size: 0.75rem;
+  color: #2563eb;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  display: block;
+  text-align: right;
+}

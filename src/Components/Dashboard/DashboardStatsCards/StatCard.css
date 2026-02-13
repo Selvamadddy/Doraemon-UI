@@ -1,0 +1,11 @@
+.cardStyle {
+    border-radius: 2rem;
+    border: 2px solid rgba(215, 215, 215, 0.304);
+    box-shadow: h-offset v-offset blur spread color inset;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.cardStyle:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
