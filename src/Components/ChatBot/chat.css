@@ -1,0 +1,204 @@
+.chat-container {
+  height: 90.5vh;
+  display: flex;
+  flex-direction: column;
+  background: #f3faff;
+}
+
+.chat-body {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.message.bot {
+  justify-content: flex-start;
+  align-items: end;
+}
+
+.message.user {
+  justify-content: flex-end;
+  align-items: end;
+}
+
+.bubble {
+  max-width: 65%;
+  padding: 1rem;
+  background: #e6f2ff;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap; 
+}
+
+.bubble.bot{
+   border-radius: 2rem 2rem 2rem 0;
+}
+
+.bubble.user{
+  border-radius: 2rem 2rem 0 2rem;
+}
+
+.message.user .bubble {
+  background: #ffffff;
+  border: 1px solid #d6e6ff;
+}
+
+.typing-indicator span {
+  animation: blink 1.4s infinite both;
+}
+
+@media (max-width: 768px) {
+  .bubble {
+    max-width: 85%;
+  }
+
+  .chat-input input {
+    font-size: 1rem;
+  }
+}
+
+.chat-input {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.4;
+  max-height: 120px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* hide scrollbar but keep scroll */
+.chat-input::-webkit-scrollbar {
+  width: 0;
+}
+
+
+.chat-input-wrapper {
+  position: relative;
+  padding: 16px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* main input container */
+.chat-input-box {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 40px;
+  padding: 14px 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  width: 80vw;
+}
+
+/* text input */
+.chat-input-box input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+  width: 100%;
+  white-space: nowrap;    
+  overflow-x: auto;       
+  text-overflow: clip;
+}
+
+.chat-input-box input::placeholder {
+  color: #9aa7b2;
+}
+
+/* mic floating button */
+.send-btn {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  height: 3rem;
+  width: 3rem;
+  background: #ff4b4b;
+  border: none;
+  color: white;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.send-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(255, 75, 75, 0.4);
+}
+
+@media (max-width: 600px) {
+  .chat-input-box {
+    padding: 12px 14px;
+  }
+
+  .chat-input-box input {
+    font-size: 16px;
+  }
+
+  .send-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 20px;
+    bottom: 4px;
+  }
+}
+
+.chat-input-box:focus-within {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.chat-input-box input::-webkit-scrollbar {
+  height: 0;
+}
+
+
+.llm-switch {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.llm-pill {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--bs-secondary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+
+.llm-pill:hover {
+  color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.llm-pill.active {
+  color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  background-color: rgba(13, 110, 253, 0.08);
+}
