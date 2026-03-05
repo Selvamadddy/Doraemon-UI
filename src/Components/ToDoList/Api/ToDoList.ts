@@ -1,8 +1,8 @@
 import { ApiRequest } from "../../../API/ApiCall"
 import type { ApiResponse } from "../../../API/ApiCall"
 
-import type ToDoTaskModel from "../Model/ToDoTaskModel"
-import type { GetTasksPayload, SaveTaskPayload } from "../Model/ToDoTaskModel"
+import type ToDoTaskModel from "../../ToDoList/Model/ToDoTaskModel"
+import type { GetTasksPayload, SaveTaskPayload } from "../../ToDoList/Model/ToDoTaskModel"
 
 const base = "/commonservice/ToDoTask/v1";
 
@@ -16,8 +16,8 @@ export async function GetTasks(payload: GetTasksPayload): Promise<ApiResponse<To
     return result;
 }
 
-export async function SaveTask(payload: SaveTaskPayload): Promise<ApiResponse<null>> {
-    const result = await ApiRequest<null>(`${base}/SaveTask`, {
+export async function SaveTask(payload: SaveTaskPayload): Promise<ApiResponse<number>> {
+    const result = await ApiRequest<number>(`${base}/SaveTask`, {
         method: "POST",
         includeAuth: true,
         payload: payload,

@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from "react";
-import AddTaskModal from "./AddTaskModal";
+import AddTaskModal from "../../ToDoList/Src/AddTaskModal";
 import AddNoteModal from "./AddNoteModal";
 
 const ToDoButtons: React.FC = () => {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
 
-  // ✅ Stable handlers (important for React.memo)
   const openTaskModal = useCallback(() => {
     setShowTaskModal(true);
   }, []);
@@ -43,7 +42,6 @@ const ToDoButtons: React.FC = () => {
         </button>
       </div>
 
-      {/* Create Mode (no task passed) */}
       <AddTaskModal
         show={showTaskModal}
         handleClose={closeTaskModal}

@@ -6,7 +6,7 @@ export interface MenuBarStateInterface{
     selectedMenu : string; 
 }
 
-const initialState : MenuBarStateInterface = {isExpanded : true, selectedMenu : "Dashboard"}
+const initialState : MenuBarStateInterface = {isExpanded : true, selectedMenu : ""}
 
 const menuBarSlice = createSlice({
     name: 'menuBar',
