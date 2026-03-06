@@ -9,7 +9,7 @@ import { useAppDispatch } from "../Hooks/ReduxHook";
 import { updateMenuBarSelection } from "../ReduxManager/Slices/MenuBarSlice";
 
 import Dashboard from "./Dashboard/Dashboard";
-import ChatPage from "./ChatBot/ChatPage";
+import ChatPage from "./ChatBot/Src/ChatPage";
 import NavComp from "./Common/NavComp";
 import UnderConstruction from "./Common/UnderConstruction";
 import ToDo from "./ToDoList/Src/ToDo";
