@@ -12,7 +12,7 @@ import Dashboard from "./Dashboard/Dashboard";
 import ChatPage from "./ChatBot/ChatPage";
 import NavComp from "./Common/NavComp";
 import UnderConstruction from "./Common/UnderConstruction";
-import ToDoTask from "./ToDoList/Src/ToDoTask";
+import ToDo from "./ToDoList/Src/ToDo";
 
 export interface MainBodyProps {
     screen: string;
@@ -70,7 +70,7 @@ export default function MainBody({ screen }: MainBodyProps) {
             case 'Dashboard':
                 return <Dashboard />
             case 'To do Task':
-                return <ToDoTask/>
+                return <ToDo/>
             case 'Gym':
                 return <UnderConstruction />
             case 'Expense tracker':
@@ -79,8 +79,6 @@ export default function MainBody({ screen }: MainBodyProps) {
                 return <UnderConstruction />
             case 'Setting':
                 return <UnderConstruction />
-            default:
-                return <Dashboard />
         }
     }   
 

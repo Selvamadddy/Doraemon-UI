@@ -1,16 +1,13 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, useMemo, useCallback, } from "react";
 import { Modal, Button, Spinner } from "react-bootstrap";
 import useDateTimeFields from "../../../Hooks/useDateTimeFields";
 import type ToDoTaskModel from "../Model/ToDoTaskModel";
-import type { SaveTaskPayload } from "../Model/ToDoTaskModel"
-import { SaveTask } from "../Api/ToDoList"
+import type { SaveTaskPayload } from "../Model/ToDoTaskModel";
+import { SaveTask } from "../Api/ToDoList";
+import { useAppDispatch, useAppSelector } from "../../../Hooks/ReduxHook";
+import { UpdateToDoTask, AddToDoTask } from "../../../ReduxManager/Slices/ToDoTask/ToDoTaskSlice";
 
-interface AddTaskModalProps {
+export interface AddTaskModalProps {
   show: boolean;
   handleClose: () => void;
   toDoTaskModel?: ToDoTaskModel | null;
@@ -36,16 +33,10 @@ const severityToNumber: Record<Severity, number> = {
   Low: 3,
 };
 
-function AddTaskModalComponent({
-  show,
-  handleClose,
-  toDoTaskModel,
-}: AddTaskModalProps) {
+function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModalProps) {
 
-  const isEditMode = useMemo(
-    () => !!toDoTaskModel?.id,
-    [toDoTaskModel?.id]
-  );
+  const isEditMode = useMemo(() => !!toDoTaskModel?.id, [toDoTaskModel?.id]);
+  const dispatch = useAppDispatch();
 
   const [form, setForm] = useState<FormState>({
     taskName: "",
@@ -119,20 +110,21 @@ function AddTaskModalComponent({
 
     const payload: SaveTaskPayload = {
       toDoTask: {
-        id: 0,
+        id: isEditMode ? (toDoTaskModel == null ? 0 : toDoTaskModel.id) : 0,
         title: form.taskName,
         dueDate: dueDateAsDate,
         severity: severityToNumber[form.severity],
         note: form.notes,
-        status: true
+        status: toDoTaskModel == null ? false : toDoTaskModel.status
       },
     };
 
     const response = await SaveTask(payload);
 
-    if (response.success) {
+    if (response.success && response.data != null && response.data > 0) {
       reset();
       handleClose();
+      isEditMode ? dispatch(UpdateToDoTask(payload.toDoTask)) : dispatch(AddToDoTask({ ...payload.toDoTask, id: response.data }));
     }
     else {
       setError("Failed to save task");
@@ -143,23 +135,12 @@ function AddTaskModalComponent({
   if (!show) return null;
 
   return (
-    <Modal
-      show={show}
-      onHide={handleClose}
-      centered
-      scrollable
-    >
+    <Modal show={show} onHide={handleClose} centered scrollable>
       <Modal.Body className="p-3 p-md-4">
-        {/* Header */}
         <div className="text-center mb-3">
           <div
             className="mx-auto mb-2 d-flex align-items-center justify-content-center"
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: "50%",
-              backgroundColor: "#facc15",
-            }}
+            style={{ width: 48, height: 48, borderRadius: "50%", backgroundColor: "#facc15" }}
           >
             🔔
           </div>
@@ -168,7 +149,6 @@ function AddTaskModalComponent({
           </h5>
         </div>
 
-        {/* Task Name */}
         <div className="mb-3">
           <label className="form-label">
             Task Name *
@@ -189,19 +169,15 @@ function AddTaskModalComponent({
           )}
         </div>
 
-        {/* Date & Time */}
         <div className="row g-3 mb-3">
           <div className="col-12 col-md-6">
             <label className="form-label">
               Due Date
             </label>
-            <input
-              type="date"
-              className="form-control rounded-pill"
+            <input type="date" className="form-control rounded-pill"
               value={dueDate}
-              onChange={(e) =>
-                setDueDate(e.target.value)
-              }
+              min={new Date().toISOString().split("T")[0]}
+              onChange={(e) => setDueDate(e.target.value)}
             />
           </div>
 
@@ -217,31 +193,19 @@ function AddTaskModalComponent({
                   setHour(e.target.value)
                 }
               >
-                {Array.from(
-                  { length: 12 },
-                  (_, i) => {
-                    const h = String(
-                      i + 1
-                    ).padStart(2, "0");
-                    return (
-                      <option key={h}>
-                        {h}
-                      </option>
-                    );
-                  }
+                {Array.from({ length: 12 }, (_, i) => {
+                  const h = String(i + 1).padStart(2, "0");
+                  return (
+                    <option key={h}>
+                      {h}
+                    </option>
+                  );
+                }
                 )}
               </select>
 
-              <select
-                className="form-select rounded-pill"
-                value={minute}
-                onChange={(e) =>
-                  setMinute(e.target.value)
-                }
-              >
-                {["00", "15", "30", "45"].map(
-                  (m) => (<option key={m}>{m}</option>)
-                )}
+              <select className="form-select rounded-pill" value={minute} onChange={(e) => setMinute(e.target.value)}>
+                {["00", "15", "30", "45"].map((m) => (<option key={m}>{m}</option>))}
               </select>
 
               <select
@@ -255,7 +219,6 @@ function AddTaskModalComponent({
           </div>
         </div>
 
-        {/* Severity */}
         <div className="mb-3">
           <label className="form-label">
             Severity
@@ -263,30 +226,11 @@ function AddTaskModalComponent({
           <div className="d-flex flex-column flex-md-row gap-2">
             {(["Low", "Medium", "High"] as Severity[]).map(
               (level) => {
-                const variant =
-                  level === "Low"
-                    ? "success"
-                    : level === "Medium"
-                      ? "warning"
-                      : "danger";
-
-                const isActive =
-                  form.severity === level;
-
+                const variant = level === "Low" ? "success" : level === "Medium" ? "warning" : "danger";
+                const isActive = form.severity === level;
                 return (
-                  <button
-                    key={level}
-                    type="button"
-                    className={`btn rounded-pill w-100 ${isActive
-                      ? `btn-${variant}`
-                      : `btn-outline-${variant}`
-                      }`}
-                    onClick={() =>
-                      updateField(
-                        "severity",
-                        level
-                      )
-                    }
+                  <button key={level} type="button" className={`btn rounded-pill w-100 ${isActive ? `btn-${variant}` : `btn-outline-${variant}`}`}
+                    onClick={() => updateField("severity", level)}
                   >
                     ● {level}
                   </button>
@@ -296,7 +240,6 @@ function AddTaskModalComponent({
           </div>
         </div>
 
-        {/* Notes */}
         <div className="mb-4">
           <label className="form-label">
             Additional Notes
@@ -306,16 +249,8 @@ function AddTaskModalComponent({
           />
         </div>
 
-        {/* save button */}
         <Button variant="primary" className="w-100 rounded-pill mb-2" onClick={handleSave} disabled={loading}>
-          {loading ? (
-            <Spinner
-              animation="border"
-              size="sm"
-            />
-          ) : (
-            "✔ Save Task"
-          )}
+          {loading ? (<Spinner animation="border" size="sm" />) : ("✔ Save Task")}
         </Button>
 
         <div className="text-center">

@@ -5,10 +5,10 @@ import './UpcomingReminders.css';
 
 import { Spinner } from "react-bootstrap";
 
-import type ToDoTaskModel from "../Model/ToDoTaskModel"
-import type { GetTasksPayload } from "../Model/ToDoTaskModel"
+import type ToDoTaskModel from "../../ToDoList/Model/ToDoTaskModel"
+import type { GetTasksPayload } from "../../ToDoList/Model/ToDoTaskModel"
 
-import { GetTasks } from "../Api/ToDoList"
+import { GetTasks } from "../../ToDoList/Api/ToDoList"
 
 export default function UpcomingReminders() {
     const [data, setData] = useState<ToDoTaskModel[] | null>(null);
@@ -38,7 +38,6 @@ export default function UpcomingReminders() {
                 }
             };
 
-
             const response = await GetTasks(payload);
             if (response.success) {
                 setData(response.data != null ? response.data : [])
@@ -56,11 +55,6 @@ export default function UpcomingReminders() {
         setData(prev => prev ? prev.map(task => task.id === updatedTask.id ? updatedTask : task) : prev);
     }
 
-    const DeleteTaskState = (id : number) =>
-    {
-        setData(prev => prev ? prev.filter(task => task.id !== id) : prev);
-    }
-
     return (
         <div className="container d-flex flex-column border border-1 py-4" style={{ borderRadius: "2rem", backgroundColor: "" }}>
             <div className="d-flex flex-row justify-content-between mb-4">
@@ -72,7 +66,7 @@ export default function UpcomingReminders() {
             </div>
             {data == null ? <Spinner /> :
                 data.map((task) => (
-                    <ReminderItem key={task.id} {...task} onDelete={DeleteTaskState} OnUpdate={UpdateTaskState} />
+                    <ReminderItem key={task.id} {...task} OnUpdate={UpdateTaskState} />
                 ))
             }
         </div>

@@ -1,17 +1,16 @@
-import { useState, type SetStateAction } from "react";
+import { useState } from "react";
 import formatDateTime from "../../Common/FormatDateTime"
 
-import type ToDoTaskModel from "../Model/ToDoTaskModel"
-import type { SaveTaskPayload } from "../Model/ToDoTaskModel"
+import type ToDoTaskModel from "../../ToDoList/Model/ToDoTaskModel"
+import type { SaveTaskPayload } from "../../ToDoList/Model/ToDoTaskModel"
 
-import { SaveTask, DeleteTask } from "../Api/ToDoList"
+import { SaveTask } from "../../ToDoList/Api/ToDoList"
 
 interface ReminderItemProps extends ToDoTaskModel {
-    onDelete: (id: number) => void;
     OnUpdate: (task: ToDoTaskModel) => void;
 }
 
-export default function ReminderItem({ onDelete, OnUpdate, ...prop }: ReminderItemProps) {
+export default function ReminderItem({ OnUpdate, ...prop }: ReminderItemProps) {
     const [viewDelete, SetViewDelete] = useState(false);
 
     const OnHoverCheckBoxStyle = {
@@ -29,7 +28,7 @@ export default function ReminderItem({ onDelete, OnUpdate, ...prop }: ReminderIt
         backgroundColor: viewDelete ? "rgba(84, 148, 238, 0.08)" : "transparent",
     }
 
-    const priorityClass = prop.severity === 1 ? "bg-danger" : (prop.severity === 2 ? "bg-warning" : (prop.severity === 3 ? "bg-secondary" : "bg-success"));
+    const priorityClass = prop.severity === 1 ? "bg-danger" : (prop.severity === 2 ? "bg-warning" : (prop.severity === 3 ? "bg-success" : "bg-secondary"));
 
     const HandleCheckBox = async () => {
         const payload: SaveTaskPayload = {
@@ -44,17 +43,6 @@ export default function ReminderItem({ onDelete, OnUpdate, ...prop }: ReminderIt
         }
         else {
             OnUpdate(payload.toDoTask);
-        }
-    };
-
-    const HandleDelete = async () => {
-        const response = await DeleteTask(prop.id);
-        if (!response.success) {
-            console.log("save task api failed");
-            onDelete(prop.id);
-        }
-        else {
-            onDelete(prop.id);
         }
     };
 
@@ -75,9 +63,8 @@ export default function ReminderItem({ onDelete, OnUpdate, ...prop }: ReminderIt
 
             <div className="d-flex flex-row align-items-center justify-content-center">
                 <span className={"badge rounded-pill px-3 py-2 me-2 " + priorityClass} style={{ fontSize: "0.9rem", opacity: "0.8" }}>
-                    {prop.severity === 1 ? "High" : (prop.severity === 2 ? "Medium" : (prop.severity === 3 ? "Done" : "Low"))}
+                    {prop.severity === 1 ? "High" : (prop.severity === 2 ? "Medium" : (prop.severity === 3 ? "Low" : "Done"))}
                 </span>
-                {viewDelete && <i className="bi bi-trash-fill" style={{ fontSize: "1.4rem" }} onClick={() => HandleDelete()}></i>}
             </div>
         </div>
     );

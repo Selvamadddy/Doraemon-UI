@@ -5,6 +5,7 @@ export default ({ mode }: { mode: string }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return defineConfig({
+    base: "/",
     plugins: [react()],
     server: {
       proxy: {
@@ -12,6 +13,11 @@ export default ({ mode }: { mode: string }) => {
           target: env.VITE_API_URL,
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/apim/, ''),
+        },
+        '/quotes': {
+          target: 'https://zenquotes.io',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/quotes/, ''),
         },
       },
     },
