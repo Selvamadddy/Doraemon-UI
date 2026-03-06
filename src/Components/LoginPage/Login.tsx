@@ -7,13 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 import "./Login.css";
 import SignIn from "../../API/Login";
-
-import LoginImg from "../../Asset/LoginPic.jpg";
-import Carousal2 from "../../Asset/Carousal2.jpg";
-import Carousal3 from "../../Asset/Carousal3.jpg";
 import Logo from "../../Asset/Logo.png";
-import background from "../../Asset/background.jpg";
-import Carousal1 from "../../Asset/Login-car-1.png"
 
 interface ValidationState {
     isValid: boolean;
