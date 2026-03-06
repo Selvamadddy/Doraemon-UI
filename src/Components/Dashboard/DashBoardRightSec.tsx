@@ -5,7 +5,7 @@ import ManageWidgetButton from "./Widget/ManageWidgetButton";
 import DailyWisdomWidget from "./Widget/DailyWisdomWidget";
 import FunFactWidget from "./Widget/FunFactWidget";
 import WeatherWidget from "./Widget/WeatherWidget";
-
+import { useToast } from "../Common/ErrorToast/ToastContext";
 import { GetUserWidget } from "./Api/Widget";
 import type { Widget } from "./Model/DashboardModel";
 
@@ -15,8 +15,8 @@ export type WidgetType = "weather" | "Random Wisdom" | "Fun Fact";
 
 export default function DashBoardRightSec(): React.ReactElement {
   const [userWidgets, setuserWidgets] = useState<Widget[]>([]);
-
   const hasFetched = useRef(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,12 +27,10 @@ export default function DashBoardRightSec(): React.ReactElement {
         setuserWidgets(response.data != null ? response.data.widgets : [])
       }
       else {
-        console.log("api error");
+        showToast("Failed to fetch user Widgets", "error");
       }
     };
-
     fetchData();
-
   }, []);
 
   const renderWidget = (widgetId: number): React.ReactNode => {
@@ -52,7 +50,6 @@ export default function DashBoardRightSec(): React.ReactElement {
     <div className="card-body d-flex flex-column">
       {window.innerWidth > ToDoButtonMinPixel && <ToDoButtons />}
       <div className="card-body d-flex flex-column mt-5">
-        {/* Render selected widgets */}
         {userWidgets.length === 0 ? (
           <p className="text-muted">No widgets selected yet.</p>
         ) : (
@@ -62,8 +59,7 @@ export default function DashBoardRightSec(): React.ReactElement {
             </div>
           ))
         )}
-
-        {/* Pass state + updater to ManageWidgetButton */}
+        
         <ManageWidgetButton widgets={userWidgets} setWidgets={setuserWidgets} />
       </div>
     </div>

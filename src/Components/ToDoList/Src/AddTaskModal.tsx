@@ -4,8 +4,9 @@ import useDateTimeFields from "../../../Hooks/useDateTimeFields";
 import type ToDoTaskModel from "../Model/ToDoTaskModel";
 import type { SaveTaskPayload } from "../Model/ToDoTaskModel";
 import { SaveTask } from "../Api/ToDoList";
-import { useAppDispatch, useAppSelector } from "../../../Hooks/ReduxHook";
+import { useAppDispatch} from "../../../Hooks/ReduxHook";
 import { UpdateToDoTask, AddToDoTask } from "../../../ReduxManager/Slices/ToDoTask/ToDoTaskSlice";
+import { useToast } from "../../Common/ErrorToast/ToastContext";
 
 export interface AddTaskModalProps {
   show: boolean;
@@ -37,6 +38,7 @@ function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModa
 
   const isEditMode = useMemo(() => !!toDoTaskModel?.id, [toDoTaskModel?.id]);
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState<FormState>({
     taskName: "",
@@ -120,7 +122,6 @@ function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModa
     };
 
     const response = await SaveTask(payload);
-
     if (response.success && response.data != null && response.data > 0) {
       reset();
       handleClose();
@@ -128,6 +129,7 @@ function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModa
     }
     else {
       setError("Failed to save task");
+      showToast("Failed to save task", "error");
     }
     setLoading(false);
   }, [form, getUtcDate, isEditMode, handleClose]);

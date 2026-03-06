@@ -7,14 +7,15 @@ import type { GetTasksPayload } from "../Model/ToDoTaskModel";
 
 import { useAppDispatch, useAppSelector } from "../../../Hooks/ReduxHook";
 import { AddAllToDoTask } from "../../../ReduxManager/Slices/ToDoTask/ToDoTaskSlice";
+import { useToast } from "../../Common/ErrorToast/ToastContext";
 
 export default function ToDoTask() {
-  const dispatch = useAppDispatch();
-  const toDoTasks = useAppSelector(state => state.toDoTask);
-
-  const [filters, setFilters] = useState({ sortBy: "priority", status: "all", severity: 0, search: "" });
+    const [filters, setFilters] = useState({ sortBy: "priority", status: "all", severity: 0, search: "" });
   const [showTaskModal, setShowTaskModal] = useState(false);
 
+  const dispatch = useAppDispatch();
+  const toDoTasks = useAppSelector(state => state.toDoTask);
+  const { showToast } = useToast();
   const hasFetched = useRef(false);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function ToDoTask() {
         dispatch(AddAllToDoTask(formattedData ?? []));
       }
       else {
-        console.log("api error");
+        showToast("Failed to fetch tasks", "error");
       }
     };
     fetchData();
