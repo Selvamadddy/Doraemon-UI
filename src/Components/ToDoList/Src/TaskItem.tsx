@@ -1,11 +1,12 @@
 import React, { useCallback, useState } from "react";
 import type ToDoTaskModel from "../Model/ToDoTaskModel";
 import formatDateTime from "../../Common/FormatDateTime";
-import { GetTasks, SaveTask, DeleteTask } from "../Api/ToDoList";
-import type { GetTasksPayload, SaveTaskPayload } from "../Model/ToDoTaskModel";
+import { SaveTask, DeleteTask } from "../Api/ToDoList";
+import type { SaveTaskPayload } from "../Model/ToDoTaskModel";
 import AddTaskModal from "./AddTaskModal";
-import { useAppDispatch, useAppSelector } from "../../../Hooks/ReduxHook";
+import { useAppDispatch } from "../../../Hooks/ReduxHook";
 import { UpdateToDoTask, RemoveToDoTask } from "../../../ReduxManager/Slices/ToDoTask/ToDoTaskSlice";
+import { useToast } from "../../Common/ErrorToast/ToastContext";
 
 interface Props {
   task: ToDoTaskModel;
@@ -26,6 +27,7 @@ export default React.memo(function TaskItem({ task }: Props) {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const priority = getPriorityConfig(task.severity)!;
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const HandleTaskStatus = async () => {
     const payload: SaveTaskPayload = {
@@ -36,7 +38,7 @@ export default React.memo(function TaskItem({ task }: Props) {
     }
     const response = await SaveTask(payload);
     if (!response.success) {
-      console.log("save task api failed");
+      showToast("Failed to save task", "error");
     }
     else {
       dispatch(UpdateToDoTask({ ...task, status: !task.status, }));
@@ -46,7 +48,7 @@ export default React.memo(function TaskItem({ task }: Props) {
   const HandleDelete = async () => {
     const response = await DeleteTask(task.id);
     if (!response.success) {
-      console.log("save task api failed");
+      showToast("Failed to delete task", "error");
     }
     else {
       dispatch(RemoveToDoTask(task.id));
