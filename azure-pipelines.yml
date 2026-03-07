@@ -20,11 +20,15 @@ steps:
   displayName: 'npm install'
 
 - script: |
+    echo "API URL: $VITE_API_URL"
     npm run build
   displayName: 'npm build'
+  env:
+    VITE_API_URL: $(VITE_API_URL)
+    VITE_selfhostllm_URL: $(VITE_selfhostllm_URL)
 
 - task: AzureStaticWebApp@0
   inputs:
     app_location: '/'
-    output_location: '"dist"'
+    output_location: 'dist'
     azure_static_web_apps_api_token: '$(deployment token)'
