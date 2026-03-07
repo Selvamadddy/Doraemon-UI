@@ -47,7 +47,7 @@ steps:
   env:
     VITE_API_URL: $(VITE_API_URL)
     VITE_selfhostllm_URL: $(VITE_selfhostllm_URL)
-    VITE_Apim_Subscription_Key: $(VITE_Apim_Subscription_Key)   
+    VITE_APIM_SUBSCRIPTION_KEY: $(VITE_APIM_SUBSCRIPTION_KEY)   
 
 - task: AzureStaticWebApp@0
   displayName: Deploying in Azure static web app
