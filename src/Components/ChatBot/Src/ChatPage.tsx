@@ -4,7 +4,6 @@ import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import { useAppSelector } from "../../../Hooks/ReduxHook";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "react-bootstrap";
 import ActivateChatServer from "./ActivateChatServer";
 
 
