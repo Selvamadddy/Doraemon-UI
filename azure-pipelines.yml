@@ -33,6 +33,15 @@ steps:
   displayName: Generate staticwebapp.config.json
 
 - script: |
+    echo "API URL: $VITE_API_URL"
+    echo "APIM KEY: $(VITE_Apim_Subscription_Key)"
+  displayName: Debug env variables
+  env:
+    VITE_API_URL: $(VITE_API_URL)
+    VITE_selfhostllm_URL: $(VITE_selfhostllm_URL)
+    VITE_Apim_Subscription_Key: $(VITE_Apim_Subscription_Key)
+
+- script: |
     npm run build
   displayName: npm build
   env:
