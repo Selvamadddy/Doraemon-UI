@@ -7,6 +7,9 @@ export default ({ mode }: { mode: string }) => {
   return defineConfig({
     base: "/",
     plugins: [react()],
+    build: {
+      outDir: "dist"
+    },
     server: {
       proxy: {
         '/apim': {
