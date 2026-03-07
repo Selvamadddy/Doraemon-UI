@@ -20,12 +20,10 @@ steps:
 
     cat <<EOF > public/staticwebapp.config.json
     {
-      "routes": [
-        {
-          "route": "/apim/*",
-          "rewrite": "${VITE_API_URL}/:splat"
-        }
-      ]
+      "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": ["/assets/*", "/*.css", "/*.js", "/*.png", "/*.jpg"]
+      }
     }
     EOF
 
