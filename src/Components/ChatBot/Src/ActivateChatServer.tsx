@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./Chat.css";
+import "./chat.css";
 
 interface Prop {
     updateIsActive: () => void;
