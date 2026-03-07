@@ -31,14 +31,14 @@ steps:
     cat public/staticwebapp.config.json
 
   displayName: Generate staticwebapp.config.json
-  env:
-    VITE_API_URL: $(VITE_API_URL)
-    VITE_selfhostllm_URL: $(VITE_selfhostllm_URL)
-    VITE_Apim_Subscription_Key: $(VITE_Apim_Subscription_Key)
 
 - script: |
     npm run build
-  displayName: npm build   
+  displayName: npm build
+  env:
+    VITE_API_URL: $(VITE_API_URL)
+    VITE_selfhostllm_URL: $(VITE_selfhostllm_URL)
+    VITE_Apim_Subscription_Key: $(VITE_Apim_Subscription_Key)   
 
 - task: AzureStaticWebApp@0
   displayName: Deploying in Azure static web app
