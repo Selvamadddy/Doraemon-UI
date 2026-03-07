@@ -3,16 +3,14 @@ export async function PostRequest<TResponse, TRequest = unknown>(
   apiName: string
 ): Promise<TResponse | null> {
   try {
-    console.log("started api call");
-    const response = await fetch(`/apim${apiName}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${apiName}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Ocp-Apim-Subscription-Key": "bdb0acb68cd14a3aaf5476627f673c23",
+        "Ocp-Apim-Subscription-Key": import.meta.env.VITE_Apim_Subscription_Key,
       },
       body: JSON.stringify(request),
     });
-    console.log("ended api call");
 
     if (!response.ok) {
       console.error("API Error:", response.status, response.statusText);
@@ -32,15 +30,14 @@ export async function GetRequestWithoutBody<TResponse>(
 ): Promise<number | null> {
   try {
     console.log("started api call");
-    const response = await fetch(`/apim${apiName}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${apiName}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Ocp-Apim-Subscription-Key": "bdb0acb68cd14a3aaf5476627f673c23",
+        "Ocp-Apim-Subscription-Key": import.meta.env.VITE_Apim_Subscription_Key,
         'Authorization': `Bearer ${localStorage.getItem("auth_token")}`
       }
     });
-    console.log("ended api call");
 
     if (!response.ok) {
       console.error("API Error:", response.status, response.statusText);
@@ -88,7 +85,6 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
       ...customHeaders
     };
 
-    // Optional Auth
     if (includeAuth) {
       const token = localStorage.getItem("auth_token");
       if (token) {
@@ -96,12 +92,11 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
       }
     }
 
-    // Optional APIM Subscription Key
     if (includeSubscriptionKey) {
-      headers["Ocp-Apim-Subscription-Key"] = "bdb0acb68cd14a3aaf5476627f673c23";
+      headers["Ocp-Apim-Subscription-Key"] = import.meta.env.VITE_Apim_Subscription_Key;
     }
 
-    const response = await fetch(`/apim${apiName}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${apiName}`, {
       method,
       headers,
       body: payload ? JSON.stringify(payload) : undefined
