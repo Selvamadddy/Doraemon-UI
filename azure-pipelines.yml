@@ -22,6 +22,9 @@ steps:
 - script: |
     npm run build
   displayName: 'npm build'
+  env:
+    VITE_API_URL: $(VITE_API_URL)
+    VITE_selfhostllm_URL: $(VITE_selfhostllm_URL)
 
 - task: AzureStaticWebApp@0
   inputs:
