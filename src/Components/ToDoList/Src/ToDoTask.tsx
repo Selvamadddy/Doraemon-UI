@@ -8,10 +8,12 @@ import type { GetTasksPayload } from "../Model/ToDoTaskModel";
 import { useAppDispatch, useAppSelector } from "../../../Hooks/ReduxHook";
 import { AddAllToDoTask } from "../../../ReduxManager/Slices/ToDoTask/ToDoTaskSlice";
 import { useToast } from "../../Common/ErrorToast/ToastContext";
+import { Spinner } from "react-bootstrap";
 
 export default function ToDoTask() {
-    const [filters, setFilters] = useState({ sortBy: "priority", status: "all", severity: 0, search: "" });
+  const [filters, setFilters] = useState({ sortBy: "priority", status: "all", severity: 0, search: "" });
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useAppDispatch();
   const toDoTasks = useAppSelector(state => state.toDoTask);
@@ -23,6 +25,7 @@ export default function ToDoTask() {
       if (hasFetched.current) return;
       hasFetched.current = true;
 
+      setLoading(true);
       const payload: GetTasksPayload = {
         Filter: {
           Severity: null,
@@ -51,6 +54,7 @@ export default function ToDoTask() {
       else {
         showToast("Failed to fetch tasks", "error");
       }
+      setLoading(false);
     };
     fetchData();
   }, [dispatch]);
@@ -92,9 +96,11 @@ export default function ToDoTask() {
       result.sort((a, b) => a.severity - b.severity);
     }
     else if (filters.sortBy === "dueDate") {
-      result.sort(
-        (a, b) => a.dueDate.getTime() - b.dueDate.getTime()
-      );
+      result.sort((a, b) => {
+        const dateA = new Date(a.dueDate as string | Date).getTime();
+        const dateB = new Date(b.dueDate as string | Date).getTime();
+        return dateA - dateB;
+      });
     }
     else if (filters.sortBy === "created") {
       result.sort((a, b) => b.id - a.id);
@@ -128,9 +134,11 @@ export default function ToDoTask() {
 
         <div className="container py-4">
           <div className="bg-light p-4 rounded-4 shadow-sm">
-
-            <TaskList tasks={filteredTasks} pageSize={5} />
-
+            {(loading ? 
+            <div className="d-flex justify-content-center align-items-center">
+              <Spinner animation="border" size="sm" /> <span className="mx-3">Loading task ....</span>
+            </div> :
+            <TaskList tasks={filteredTasks} pageSize={5} />)}
           </div>
         </div>
       </div>

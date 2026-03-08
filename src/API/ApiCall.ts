@@ -7,7 +7,7 @@ export async function PostRequest<TResponse, TRequest = unknown>(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Ocp-Apim-Subscription-Key": import.meta.env.VITE_Apim_Subscription_Key,
+        "Ocp-Apim-Subscription-Key": import.meta.env.VITE_APIM_SUBSCRIPTION_KEY,
       },
       body: JSON.stringify(request),
     });
@@ -34,7 +34,7 @@ export async function GetRequestWithoutBody<TResponse>(
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Ocp-Apim-Subscription-Key": import.meta.env.VITE_Apim_Subscription_Key,
+        "Ocp-Apim-Subscription-Key": import.meta.env.VITE_APIM_SUBSCRIPTION_KEY,
         'Authorization': `Bearer ${localStorage.getItem("auth_token")}`
       }
     });
@@ -93,7 +93,7 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
     }
 
     if (includeSubscriptionKey) {
-      headers["Ocp-Apim-Subscription-Key"] = import.meta.env.VITE_Apim_Subscription_Key;
+      headers["Ocp-Apim-Subscription-Key"] = import.meta.env.VITE_APIM_SUBSCRIPTION_KEY;
     }
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}${apiName}`, {
@@ -111,6 +111,12 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
     if (contentType && contentType.includes("application/json")) {
       const text = await response.text();
       data = text ? (JSON.parse(text) as T) : null;
+    }
+
+    if(response.status == 401)
+    {
+      localStorage.removeItem("auth_token");
+      window.location.href = "/login";
     }
 
     if (!response.ok) {
