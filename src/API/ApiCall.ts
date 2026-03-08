@@ -113,6 +113,12 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
       data = text ? (JSON.parse(text) as T) : null;
     }
 
+    if(response.status == 401)
+    {
+      localStorage.removeItem("auth_token");
+      window.location.href = "/login";
+    }
+
     if (!response.ok) {
       return {
         success: false,

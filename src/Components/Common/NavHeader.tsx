@@ -12,6 +12,7 @@ import { updateMenuBarSelection } from "../../ReduxManager/Slices/MenuBarSlice";
 
 import { SignOut } from "../../API/Login";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "./ErrorToast/ToastContext";
 
 const mobileViewWidth: number = 400;
 
@@ -21,6 +22,7 @@ export default function NavHeader() {
     const [notificationCount, setnotificationCount] = useState<number>(11);
 
     const navigate = useNavigate();
+    const { showToast } = useToast();
 
     const dispatch = useAppDispatch();
     const menuBarState = useAppSelector(state => state.menuBar);
@@ -36,9 +38,12 @@ export default function NavHeader() {
     const HandleLogoutButton = async (): Promise<void> => {
         const response = await SignOut();
         console.log(response);
-        if (response == null || response === 200) {
-            navigate('/login');
+        if (response == null || response === 200 || response === 400) {
+             showToast("Logged out", "success");
         }
+        localStorage.removeItem("auth_token");
+        navigate('/login');
+
     }
 
 

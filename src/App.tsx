@@ -10,6 +10,7 @@ import Register from './Components/LoginPage/Register.tsx';
 import ResetPassword from './Components/LoginPage/ResetPassword.tsx';
 
 import ToastProvider from "./Components/Common/ErrorToast/ToastContext.tsx";
+import AuthenticateRoue from './Components/Common/AuthValidation/AuthenticateRoue.tsx';
 
 function App() {
 
@@ -21,14 +22,14 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
-          <Route path="/dashboard" element={<MainBody screen='Dashboard' />} />
-          <Route path="/chatbot" element={<MainBody screen='Chat with me' />} />
-          <Route path="/doTo" element={<MainBody screen='To do Task' />} />
-          <Route path="/gym" element={<MainBody screen='Gym' />} />
-          <Route path="/expensetracker" element={<MainBody screen='Expense tracker' />} />
-          <Route path="/fishmonitor" element={<MainBody screen='Fish monitor' />} />
-          <Route path="/setting" element={<MainBody screen='Setting' />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<AuthenticateRoue> <MainBody screen='Dashboard' /> </AuthenticateRoue>} />
+          <Route path="/chatbot" element={<AuthenticateRoue><MainBody screen='Chat with me' /></AuthenticateRoue>} />
+          <Route path="/doTo" element={<AuthenticateRoue><MainBody screen='To do Task' /></AuthenticateRoue>} />
+          <Route path="/gym" element={<AuthenticateRoue><MainBody screen='Gym' /></AuthenticateRoue>} />
+          <Route path="/expensetracker" element={<AuthenticateRoue><MainBody screen='Expense tracker' /></AuthenticateRoue>} />
+          <Route path="/fishmonitor" element={<AuthenticateRoue><MainBody screen='Fish monitor' /></AuthenticateRoue>} />
+          <Route path="/setting" element={<AuthenticateRoue><MainBody screen='Setting' /></AuthenticateRoue>} />
+          <Route path="*" element={<AuthenticateRoue><Navigate to="/dashboard" replace /></AuthenticateRoue>} />
         </Routes>
       </ToastProvider>
     </Provider>

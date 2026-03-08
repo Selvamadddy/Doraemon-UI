@@ -2,7 +2,7 @@ export default interface ToDoTaskModel
 {
     id : number,
     title: string,
-    dueDate: Date,
+    dueDate: Date | string,
     severity: number,
     note: string,
     status: boolean
