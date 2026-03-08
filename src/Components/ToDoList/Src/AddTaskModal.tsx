@@ -35,7 +35,7 @@ const severityToNumber: Record<Severity, number> = {
 };
 
 function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModalProps) {
-
+  
   const isEditMode = useMemo(() => !!toDoTaskModel?.id, [toDoTaskModel?.id]);
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
@@ -105,6 +105,7 @@ function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModa
       setError("Task name is required");
       return;
     }
+    setLoading(true);
 
     const utcDate = getUtcDate();
 
@@ -112,7 +113,7 @@ function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModa
 
     const payload: SaveTaskPayload = {
       toDoTask: {
-        id: isEditMode ? (toDoTaskModel == null ? 0 : toDoTaskModel.id) : 0,
+        id: toDoTaskModel == null ? 0 : toDoTaskModel.id,
         title: form.taskName,
         dueDate: dueDateAsDate,
         severity: severityToNumber[form.severity],
@@ -211,7 +212,7 @@ function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModa
               </select>
 
               <select
-                className="form-select rounded-pill" value={period}
+                className="form-select rounded-pill p-1" value={period}
                 onChange={(e) => setPeriod(e.target.value as "AM" | "PM")}
               >
                 <option>AM</option>

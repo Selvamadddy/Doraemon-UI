@@ -51,9 +51,7 @@ const TaskList: React.FC<TaskListProps> = ({tasks, pageSize = 4,}) => {
 
   return (
     <div>
-      {tasks.length === 0 ? (
-        <div className="text-center text-muted">No tasks found</div>
-      ) : (
+      {tasks.length === 0 ? ( <div className="text-center text-muted">No tasks found</div> ) : (
         <>
           {paginatedTasks.map((task) => (
             <TaskItem key={task.id} task={task}/>
