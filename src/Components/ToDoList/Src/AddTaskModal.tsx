@@ -108,7 +108,7 @@ function AddTaskModalComponent({ show, handleClose, toDoTaskModel }: AddTaskModa
 
     const utcDate = getUtcDate();
 
-    const dueDateAsDate = utcDate ? new Date(utcDate) : new Date();
+    const dueDateAsDate = utcDate ? utcDate : new Date().toISOString();
 
     const payload: SaveTaskPayload = {
       toDoTask: {

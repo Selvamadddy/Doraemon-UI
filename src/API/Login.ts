@@ -13,11 +13,6 @@ interface TokenResponse {
   };
 }
 
-interface CacheToken {
-  value: string;
-  expiry: number; // timestamp
-}
-
 const base = "/identity/v1/api";
 
 export default async function SignIn(
