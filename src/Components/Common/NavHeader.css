@@ -4,6 +4,7 @@ hide-on-mobile {
 
 .profile-pic {
     height : 7vh;
+    width: 7vh;
 }
 
 .profile-pic:hover {
