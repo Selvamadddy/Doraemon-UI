@@ -17,6 +17,7 @@ import ProfilePage from "./Settings/Src/ProfilePage";
 import { GetUserDetail } from "./Settings/API/ProfileSettingAPI";
 import { AddUserDetail } from "../ReduxManager/Slices/User/UserSlice";
 import { useToast } from "./Common/ErrorToast/ToastContext";
+import useTokenValidator from "../Hooks/UseTokenValidator";
 
 export interface MainBodyProps {
     screen: string;
@@ -98,6 +99,7 @@ export default function MainBody({ screen }: MainBodyProps) {
     }
 
     const currentScreen = displayScreen();
+    useTokenValidator();
 
     return (
         <>

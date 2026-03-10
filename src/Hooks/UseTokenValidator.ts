@@ -9,12 +9,12 @@ export default function useTokenValidator() {
             try {
                 const response = await GetWidget();
                 if (!response.success) {
-                    localStorage.removeItem("token");
+                    localStorage.removeItem("auth_token");
                     window.location.href = "/login";
                 }
             }
             catch {
-                localStorage.removeItem("token");
+                localStorage.removeItem("auth_token");
                 window.location.href = "/login";
             }
         };
