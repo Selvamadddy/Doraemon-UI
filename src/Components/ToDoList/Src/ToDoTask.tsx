@@ -37,7 +37,7 @@ export default function ToDoTask() {
         Pagination: {
           Count: 0,
           Offset: 0,
-          Limit: 5,
+          Limit: 0,
           SortOrder: null,
           SortBy: null
         }
