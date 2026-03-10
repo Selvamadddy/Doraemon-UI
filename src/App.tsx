@@ -19,9 +19,7 @@ function App() {
   return (
     <Provider store={store}>
       <ToastProvider>
-
         <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
-
           <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={<Login />} />
@@ -34,13 +32,9 @@ function App() {
             <Route path="/expensetracker" element={<AuthenticateRoue><MainBody screen='Expense tracker' /></AuthenticateRoue>} />
             <Route path="/fishmonitor" element={<AuthenticateRoue><MainBody screen='Fish monitor' /></AuthenticateRoue>} />
             <Route path="/setting" element={<AuthenticateRoue><MainBody screen='Setting' /></AuthenticateRoue>} />
-
             <Route path="*" element={<AuthenticateRoue><Navigate to="/dashboard" replace /></AuthenticateRoue>} />
-
           </Routes>
-
         </Suspense>
-
       </ToastProvider>
     </Provider>
   )

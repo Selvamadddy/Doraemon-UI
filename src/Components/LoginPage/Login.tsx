@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./Login.css";
@@ -26,12 +26,6 @@ export default function Login() {
     const [password, setPassword] = useState<string>("");
 
     const navigate = useNavigate();
-    useEffect(() => {
-        const token = localStorage.getItem("auth_token");
-        if (token) {
-            navigate("/dashboard");
-        }
-    }, [navigate]);
 
     const [isValidEmail, setIsValidEmail] = useState<ValidationState>({
         isValid: true,
@@ -117,7 +111,7 @@ export default function Login() {
             else {
                 setIsLoading(false);
                 alert(`Beta !!!! Don't use personal or confidential data in this website.`);
-                navigate('/Setting');
+                navigate('/dashboard');
             }
         }
         setIsLoading(false);
