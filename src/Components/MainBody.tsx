@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RootState } from "../ReduxManager/Store";
 
 import { useAppDispatch } from "../Hooks/ReduxHook";
@@ -13,6 +13,10 @@ import ChatPage from "./ChatBot/Src/ChatPage";
 import NavComp from "./Common/NavComp";
 import UnderConstruction from "./Common/UnderConstruction";
 import ToDo from "./ToDoList/Src/ToDo";
+import ProfilePage from "./Settings/Src/ProfilePage";
+import { GetUserDetail } from "./Settings/API/ProfileSettingAPI";
+import { AddUserDetail } from "../ReduxManager/Slices/User/UserSlice";
+import { useToast } from "./Common/ErrorToast/ToastContext";
 
 export interface MainBodyProps {
     screen: string;
@@ -20,21 +24,32 @@ export interface MainBodyProps {
 
 export default function MainBody({ screen }: MainBodyProps) {
     const dispatch = useAppDispatch();
-
-    const menuBarStatus = useSelector(
-        (state: RootState) => state.menuBar
-    );
+    const { showToast } = useToast();
+    const menuBarStatus = useSelector((state: RootState) => state.menuBar);
+    const hasFetched = useRef(false);
 
     useEffect(() => {
         if (screen) {
-            dispatch(
-                updateMenuBarSelection({
-                    isExpanded: menuBarStatus.isExpanded,
-                    selectedMenu: screen,
-                })
-            );
+            dispatch(updateMenuBarSelection({ isExpanded: menuBarStatus.isExpanded, selectedMenu: screen, }));
         }
     }, [screen, dispatch]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (hasFetched.current) return;
+            hasFetched.current = true;
+
+            const response = await GetUserDetail();
+
+            if (response.success && response.data) {
+                dispatch(AddUserDetail(response.data));
+            } else {
+                showToast("Failed to load user details", "error");
+            }
+        };
+
+        fetchData();
+    }, [])
 
     const mobileBreakpoint = 400;
 
@@ -57,8 +72,8 @@ export default function MainBody({ screen }: MainBodyProps) {
         marginLeft: isMobile
             ? "0"
             : menuBarStatus.isExpanded
-            ? "15vw"
-            : "5vw",
+                ? "15vw"
+                : "5vw",
         padding: "2px",
         transition: "margin-left 0.3s ease-in-out"
     };
@@ -70,7 +85,7 @@ export default function MainBody({ screen }: MainBodyProps) {
             case 'Dashboard':
                 return <Dashboard />
             case 'To do Task':
-                return <ToDo/>
+                return <ToDo />
             case 'Gym':
                 return <UnderConstruction />
             case 'Expense tracker':
@@ -78,9 +93,9 @@ export default function MainBody({ screen }: MainBodyProps) {
             case 'Fish monitor':
                 return <UnderConstruction />
             case 'Setting':
-                return <UnderConstruction />
+                return <ProfilePage />
         }
-    }   
+    }
 
     const currentScreen = displayScreen();
 

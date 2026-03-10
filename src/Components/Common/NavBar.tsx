@@ -90,8 +90,7 @@ export default function NavBar() {
         marginBottom: '1.4vh',
         paddingRight: "3px"
     }
-
-    console.log(window.innerWidth)
+    
     return (
         <>
             {

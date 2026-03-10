@@ -49,8 +49,6 @@ export default function ManageWidgetButton({ widgets, setWidgets }: Props): Reac
     }
   }, []);
 
-  console.log(widget);
-
   const addWidget = async (widget: Widget) => {
     if (!widgets.some(x => x.id == widget.id)) {
       setWidgets([...widgets, widget]);
@@ -112,8 +110,8 @@ export default function ManageWidgetButton({ widgets, setWidgets }: Props): Reac
                 <ul className="dropdown-menu">
                   {
                     widget.map(x =>
-                      <li >
-                        <button
+                      <li key={x.id}>
+                        <button key={x.id}
                           className="dropdown-item"
                           onClick={() => addWidget(x)}
                         >

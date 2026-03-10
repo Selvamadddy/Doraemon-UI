@@ -1,13 +1,14 @@
 import NavHeader from "./NavHeader";
 import NavBar from "./NavBar";
+import { memo } from "react";
 
-export default function NavComp() {
-
-
+function NavComp() {
     return (
         <>
-            <NavHeader/>
+            <NavHeader />
             <NavBar />
         </>
     );
 }
+
+export default memo(NavComp);
