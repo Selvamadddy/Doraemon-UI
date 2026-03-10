@@ -64,26 +64,30 @@ export interface ApiResponse<T> {
 interface ApiRequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   payload?: unknown;
+  formData?: FormData;
   includeAuth?: boolean;
   includeSubscriptionKey?: boolean;
   customHeaders?: Record<string, string>;
 }
 
-export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> 
-{
+export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
   try {
     const {
       method = "GET",
       payload,
+      formData,
       includeAuth = false,
       includeSubscriptionKey = false,
       customHeaders = {}
     } = options || {};
 
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
       ...customHeaders
     };
+
+    if (!formData) {
+      headers["Content-Type"] = "application/json";
+    }
 
     if (includeAuth) {
       const token = localStorage.getItem("auth_token");
@@ -99,7 +103,7 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
     const response = await fetch(`${import.meta.env.VITE_API_URL}${apiName}`, {
       method,
       headers,
-      body: payload ? JSON.stringify(payload) : undefined
+      body: formData ? formData : (payload ? JSON.stringify(payload) : undefined)
     });
 
     const status = response.status;
@@ -113,10 +117,9 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
       data = text ? (JSON.parse(text) as T) : null;
     }
 
-    if(response.status == 401)
-    {
-      localStorage.removeItem("auth_token");
-      window.location.href = "/login";
+    if (response.status == 401) {
+       localStorage.removeItem("auth_token");
+       window.location.href = "/login";
     }
 
     if (!response.ok) {
