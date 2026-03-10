@@ -3,9 +3,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './NavHeader.css'
 
 import Logo from '/src/Asset/Logo.png'
-import ProfilePic from '/src/Asset/ProfilePic.jpg'
 import Walking from '/src/Asset/DoraemonFlying.gif'
-import { useState } from 'react';
+import { useState, memo, useCallback } from 'react';
 
 import { useAppDispatch, useAppSelector } from "../../Hooks/ReduxHook";
 import { updateMenuBarSelection } from "../../ReduxManager/Slices/MenuBarSlice";
@@ -16,42 +15,37 @@ import { useToast } from "./ErrorToast/ToastContext";
 
 const mobileViewWidth: number = 400;
 
-export default function NavHeader() {
+function NavHeader() {
     const [isProfileMenuVisible, setIsProfileMenuVisble] = useState(false);
     const [isNotificationDisplayVisible, setIsNotificationDisplayVisble] = useState(false);
     const [notificationCount, setnotificationCount] = useState<number>(11);
 
     const navigate = useNavigate();
     const { showToast } = useToast();
-
     const dispatch = useAppDispatch();
     const menuBarState = useAppSelector(state => state.menuBar);
+    const userDetail = useAppSelector(state => state.userDetail);
 
-    const updateMenuBarState = (isExpand: boolean, menu: string | null) => {
+    const updateMenuBarState = useCallback((isExpand: boolean, menu: string | null) => {
         dispatch(updateMenuBarSelection({
             isExpanded: (isExpand ? !menuBarState.isExpanded : menuBarState.isExpanded),
             selectedMenu: (menu == null ? menuBarState.selectedMenu : menu)
-        }))
+        }));
+    }, [dispatch, menuBarState]);
 
-    }
-
-    const HandleLogoutButton = async (): Promise<void> => {
+    const HandleLogoutButton = useCallback(async (): Promise<void> => {
         const response = await SignOut();
-        console.log(response);
         if (response == null || response === 200 || response === 400) {
-             showToast("Logged out", "success");
+            showToast("Logged out", "success");
         }
         localStorage.removeItem("auth_token");
         navigate('/login');
-
-    }
-
+    }, [navigate, showToast]);
 
     return (
         <>
             <div className="container-full d-flex flex-row fixed-top" style={{ height: '10vh', backgroundColor: '#2b7cee', zIndex: "10" }}>
 
-                {/* Websit name and logo*/}
                 <div className='d-flex flex-row align-items-center justify-content-start' style={{ width: '80%' }}>
                     <img className='rounded-circle shadow border border-white border-2 me-3' src={Logo} alt='Logo'
                         style={{ height: '8vh', marginRight: '1vw', marginLeft: '1vw' }} onClick={() => window.innerWidth < 400 ? updateMenuBarState(true, null) : ""} />
@@ -67,7 +61,6 @@ export default function NavHeader() {
                     </div>
                 }
 
-                {/* Notification and user profile */}
                 <div className='d-flex flex-row align-items-center justify-content-end' style={{ width: '19vw' }}>
                     <div className=' d-flex flex-row align-items-center position-relative'
                         onMouseEnter={() => setIsNotificationDisplayVisble(true)} onMouseLeave={() => setIsNotificationDisplayVisble(false)}
@@ -88,16 +81,18 @@ export default function NavHeader() {
                         }
                     </div>
 
-                    <span className='me-2 hide-on-mobile' style={{ fontFamily: "Fredoka, sans-serif" }}>Nobita Nobi</span>
+                    <span className='me-2 hide-on-mobile text-white' style={{ fontFamily: "Fredoka, sans-serif" }} onClick={() => setIsProfileMenuVisble(!isProfileMenuVisible)}>
+                        {userDetail.name}
+                    </span>
 
                     <div className=' d-flex flex-row align-items-center position-relative'>
-                        <img className='rounded-circle profile-pic' src={ProfilePic}
-                            onClick={() => setIsProfileMenuVisble(!isProfileMenuVisible)} />
+                        {userDetail.profileImage ? <img className='rounded-circle profile-pic' src={userDetail.profileImage} onClick={() => setIsProfileMenuVisble(!isProfileMenuVisible)} />
+                            : <span className="fs-1 text-white"> {userDetail.name?.charAt(0) || "N"} </span>}
 
                         {isProfileMenuVisible &&
                             <div className='position-absolute profile-menu fw-bold pt-2' onMouseLeave={() => setIsProfileMenuVisble(false)}>
                                 {window.innerWidth < mobileViewWidth &&
-                                    <p className='m-2 mb-3'>Nobita Nobi</p>
+                                    <p className='m-2 mb-3'>{userDetail.name}</p>
                                 }
                                 {window.innerWidth < mobileViewWidth &&
                                     <div className='d-flex flex-row profile-menu-option'>
@@ -105,7 +100,7 @@ export default function NavHeader() {
                                         <p className='me-2'>Notification</p>
                                     </div>
                                 }
-                                <div className='d-flex flex-row profile-menu-option'>
+                                <div className='d-flex flex-row profile-menu-option' onClick={() => navigate('/Setting')}>
                                     <i className="bi bi-person mx-2"></i>
                                     <p className='me-2'>Account</p>
                                 </div>
@@ -122,3 +117,5 @@ export default function NavHeader() {
         </>
     );
 }
+
+export default memo(NavHeader);

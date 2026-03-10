@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./Login.css";
@@ -26,6 +26,12 @@ export default function Login() {
     const [password, setPassword] = useState<string>("");
 
     const navigate = useNavigate();
+    useEffect(() => {
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+            navigate("/dashboard");
+        }
+    }, [navigate]);
 
     const [isValidEmail, setIsValidEmail] = useState<ValidationState>({
         isValid: true,
@@ -98,26 +104,23 @@ export default function Login() {
         CheckEmpty(email, setIsValidEmail, "Email");
         CheckEmpty(password, setIsValidPassword, "Password");
 
-        if(email !== "" && password !== "" && canSendRequest){
+        if (email !== "" && password !== "" && canSendRequest) {
             const response = await SignIn(email, password);
-            if(response == null || response === 500)
-            {
+            if (response == null || response === 500) {
                 setIsLoading(false);
-                setIsFailed({"failed" : true, "msg" : "Failed to Sign in. Try after some time."});
+                setIsFailed({ "failed": true, "msg": "Failed to Sign in. Try after some time." });
             }
-            else if(response === 401)
-            {
+            else if (response === 401) {
                 setIsLoading(false);
-                setIsFailed({"failed" : true, "msg" : "Invalid Email And Password"});
+                setIsFailed({ "failed": true, "msg": "Invalid Email And Password" });
             }
-            else
-            {
+            else {
                 setIsLoading(false);
                 alert(`Beta !!!! Don't use personal or confidential data in this website.`);
-                navigate('/doTo');
+                navigate('/Setting');
             }
-        } 
-        setIsLoading(false);        
+        }
+        setIsLoading(false);
     };
     //#endregion Input Handlers
 
@@ -206,15 +209,15 @@ export default function Login() {
                         </button>
 
                         {isFailed.failed && (
-                           <a className="small text-muted mb-4" href="#" onClick={(e) => {e.preventDefault();navigate("/resetpassword");}}>
+                            <a className="small text-muted mb-4" href="#" onClick={(e) => { e.preventDefault(); navigate("/resetpassword"); }}>
                                 forgot password?
                             </a>
                         )}
-                        
+
 
                         <p className="mb-4">
                             Don&apos;t have an account?{" "}
-                            <a href="#" style={{ color: "#393f81" }} onClick={(e) => {e.preventDefault();navigate("/register");}}>
+                            <a href="#" style={{ color: "#393f81" }} onClick={(e) => { e.preventDefault(); navigate("/register"); }}>
                                 Register here
                             </a>
                         </p>
