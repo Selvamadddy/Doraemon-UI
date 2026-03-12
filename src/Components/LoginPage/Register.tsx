@@ -95,13 +95,13 @@ export default function Register() {
             setIsLoading(true);
 
             const response = await RegisterApi(email, password, userName);
-            if(response != null && response != undefined)
+            if(response && response.success)
             {
               alert("Registration successful");
               navigate("/login");
             }
             else{
-              setErrorMessage("USer not registered");
+              setErrorMessage("User not registered");
             }
 
         } catch (error) {
