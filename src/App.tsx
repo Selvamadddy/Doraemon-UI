@@ -1,36 +1,42 @@
 import './App.css'
-import NavComp from './Components/Common/NavComp.tsx'
-import MainBody from './Components/MainBody.tsx'
-import { Provider } from 'react-redux';
-import { store } from './ReduxManager/Store.tsx';
+import { Provider } from 'react-redux'
+import { store } from './ReduxManager/Store.tsx'
 import "./Utils/ResponsiveUtility/Responsive.css"
-import Login from './Components/LoginPage/Login.tsx';
 
-import { Routes, Route, Navigate } from "react-router-dom";
-import Dashboard from './Components/Dashboard/Dashboard.tsx';
-import Register from './Components/LoginPage/Register.tsx';
-import ResetPassword from './Components/LoginPage/ResetPassword.tsx';
+import { Routes, Route, Navigate } from "react-router-dom"
+import { Suspense, lazy } from "react"
+
+import ToastProvider from "./Components/Common/ErrorToast/ToastContext.tsx"
+import AuthenticateRoue from './Components/Common/AuthValidation/AuthenticateRoue.tsx'
+
+// Lazy loaded pages
+const Login = lazy(() => import('./Components/LoginPage/Login.tsx'))
+const Register = lazy(() => import('./Components/LoginPage/Register.tsx'))
+const ResetPassword = lazy(() => import('./Components/LoginPage/ResetPassword.tsx'))
+const MainBody = lazy(() => import('./Components/MainBody.tsx'))
 
 function App() {
-
   return (
     <Provider store={store}>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/resetpassword" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<MainBody screen='Dashboard'/>} />
-        <Route path="/chatbot" element={<MainBody screen='Chat with me'/>} />
-        <Route path="/doTo" element={<MainBody screen='To do Task'/>} />
-        <Route path="/gym" element={<MainBody screen='Gym'/>} />
-        <Route path="/expensetracker" element={<MainBody screen='Expense tracker'/>} />
-        <Route path="/fishmonitor" element={<MainBody screen='Fish monitor'/>} />
-        <Route path="/setting" element={<MainBody screen='Setting'/>} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      <ToastProvider>
+        <Suspense fallback={<div className="text-center mt-5">Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/resetpassword" element={<ResetPassword />} />
+            <Route path="/dashboard" element={<AuthenticateRoue><MainBody screen='Dashboard' /></AuthenticateRoue>} />
+            <Route path="/chatbot" element={<AuthenticateRoue><MainBody screen='Chat with me' /></AuthenticateRoue>} />
+            <Route path="/doTo" element={<AuthenticateRoue><MainBody screen='To do Task' /></AuthenticateRoue>} />
+            <Route path="/gym" element={<AuthenticateRoue><MainBody screen='Gym' /></AuthenticateRoue>} />
+            <Route path="/expensetracker" element={<AuthenticateRoue><MainBody screen='Expense tracker' /></AuthenticateRoue>} />
+            <Route path="/fishmonitor" element={<AuthenticateRoue><MainBody screen='Fish monitor' /></AuthenticateRoue>} />
+            <Route path="/setting" element={<AuthenticateRoue><MainBody screen='Setting' /></AuthenticateRoue>} />
+            <Route path="*" element={<AuthenticateRoue><Navigate to="/dashboard" replace /></AuthenticateRoue>} />
+          </Routes>
+        </Suspense>
+      </ToastProvider>
     </Provider>
-
   )
 }
 

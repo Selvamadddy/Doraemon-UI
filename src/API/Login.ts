@@ -1,4 +1,4 @@
-import { PostRequest, GetRequestWithoutBody, ApiRequest } from "./ApiCall";
+import { PostRequest, GetRequestWithoutBody, ApiRequest, type ApiResponse } from "./ApiCall";
 
 interface SignInRequest {
   email: string;
@@ -11,11 +11,6 @@ interface TokenResponse {
   token?: {
     access_Token: string;
   };
-}
-
-interface CacheToken {
-  value: string;
-  expiry: number; // timestamp
 }
 
 const base = "/identity/v1/api";
@@ -69,7 +64,7 @@ export async function SignOut(): Promise<number> {
   }
 }
 
-export async function RegisterApi(email : string, newPassword: string, name : string): Promise<boolean> {
+export async function RegisterApi(email : string, newPassword: string, name : string): Promise<ApiResponse<null>> {
     const result = await ApiRequest<null>(`${base}/user/registerUser`, {
         method: "POST",
         payload: {
@@ -80,5 +75,5 @@ export async function RegisterApi(email : string, newPassword: string, name : st
         includeAuth: false,
         includeSubscriptionKey: true
     });
-    return result.success;
+    return result;
 }

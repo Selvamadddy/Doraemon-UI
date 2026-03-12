@@ -3,16 +3,14 @@ export async function PostRequest<TResponse, TRequest = unknown>(
   apiName: string
 ): Promise<TResponse | null> {
   try {
-    console.log("started api call");
-    const response = await fetch(`/apim${apiName}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${apiName}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Ocp-Apim-Subscription-Key": "bdb0acb68cd14a3aaf5476627f673c23",
+        "Ocp-Apim-Subscription-Key": import.meta.env.VITE_APIM_SUBSCRIPTION_KEY,
       },
       body: JSON.stringify(request),
     });
-    console.log("ended api call");
 
     if (!response.ok) {
       console.error("API Error:", response.status, response.statusText);
@@ -32,15 +30,14 @@ export async function GetRequestWithoutBody<TResponse>(
 ): Promise<number | null> {
   try {
     console.log("started api call");
-    const response = await fetch(`/apim${apiName}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${apiName}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Ocp-Apim-Subscription-Key": "bdb0acb68cd14a3aaf5476627f673c23",
+        "Ocp-Apim-Subscription-Key": import.meta.env.VITE_APIM_SUBSCRIPTION_KEY,
         'Authorization': `Bearer ${localStorage.getItem("auth_token")}`
       }
     });
-    console.log("ended api call");
 
     if (!response.ok) {
       console.error("API Error:", response.status, response.statusText);
@@ -67,28 +64,31 @@ export interface ApiResponse<T> {
 interface ApiRequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   payload?: unknown;
+  formData?: FormData;
   includeAuth?: boolean;
   includeSubscriptionKey?: boolean;
   customHeaders?: Record<string, string>;
 }
 
-export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> 
-{
+export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
   try {
     const {
       method = "GET",
       payload,
+      formData,
       includeAuth = false,
       includeSubscriptionKey = false,
       customHeaders = {}
     } = options || {};
 
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
       ...customHeaders
     };
 
-    // Optional Auth
+    if (!formData) {
+      headers["Content-Type"] = "application/json";
+    }
+
     if (includeAuth) {
       const token = localStorage.getItem("auth_token");
       if (token) {
@@ -96,15 +96,14 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
       }
     }
 
-    // Optional APIM Subscription Key
     if (includeSubscriptionKey) {
-      headers["Ocp-Apim-Subscription-Key"] = "bdb0acb68cd14a3aaf5476627f673c23";
+      headers["Ocp-Apim-Subscription-Key"] = import.meta.env.VITE_APIM_SUBSCRIPTION_KEY;
     }
 
-    const response = await fetch(`/apim${apiName}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${apiName}`, {
       method,
       headers,
-      body: payload ? JSON.stringify(payload) : undefined
+      body: formData ? formData : (payload ? JSON.stringify(payload) : undefined)
     });
 
     const status = response.status;
@@ -117,6 +116,11 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
       const text = await response.text();
       data = text ? (JSON.parse(text) as T) : null;
     }
+
+    // if (response.status == 401) {
+    //    localStorage.removeItem("auth_token");
+    //    window.location.href = "/login";
+    // }
 
     if (!response.ok) {
       return {

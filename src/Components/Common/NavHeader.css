@@ -4,6 +4,7 @@ hide-on-mobile {
 
 .profile-pic {
     height : 7vh;
+    width: 7vh;
 }
 
 .profile-pic:hover {
@@ -15,7 +16,7 @@ hide-on-mobile {
     right : 0vw;
     border-radius: 7px;
     background-color :rgb(43, 121, 223);  
-    color: rgba(255, 255, 255, 0.586);
+    color: rgba(255, 255, 255, 0.774);
 }
 
 .profile-menu-option:hover{

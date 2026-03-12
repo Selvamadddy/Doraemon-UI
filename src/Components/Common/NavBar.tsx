@@ -90,8 +90,7 @@ export default function NavBar() {
         marginBottom: '1.4vh',
         paddingRight: "3px"
     }
-
-    console.log(window.innerWidth)
+    
     return (
         <>
             {
@@ -107,7 +106,7 @@ export default function NavBar() {
                         {[
                             { name: "Dashboard", icon: "bi-pip", route : "/dashboard" },
                             { name: "Chat with me", icon: "bi-robot", route : "/chatbot" },
-                            { name: "To do List", icon: "bi-journal-bookmark", route : "/doTo" },
+                            { name: "To do Task", icon: "bi-journal-bookmark", route : "/doTo" },
                             { name: "Gym", icon: "bi-person-walking", route : "/gym" },
                             { name: "Expense tracker", icon: "bi-wallet2", route : "/expensetracker" },
                             {name: "Fish monitor", icon: "fa-fish", route : "/fishmonitor"}

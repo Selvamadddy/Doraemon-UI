@@ -2,18 +2,19 @@ import DashboardStats from "./DashboardStatsCards/DashboardStats";
 import UpcomingReminders from "./Reminder/UpcomingReminders";
 import ToDoButtons from "./ToDoButtons/TaskButton"
 import WelcomeGif from '/src/Asset/Doraemon-Welcome.gif'
+import { useAppSelector } from "../../Hooks/ReduxHook";
 
 const ToDoButtonMinPixel: number = 800;
 
 export default function DashBoardLeftSec() {
-
+    const userDetail = useAppSelector(state => state.userDetail);
     return (
         <div className="card-body d-flex flex-column" >
             <div className="d-flex flex-column align-items-center">
                 <div className="d-flex flex-row align-items-center">
                     {window.innerWidth > ToDoButtonMinPixel && <img src={WelcomeGif} alt="" style={{ height: "3.5rem" }} />}
                     <div>
-                        <p style={{ fontSize: '1.8rem', marginBottom: '0' }}>Welcome back, Nobita!</p>
+                        <p style={{ fontSize: '1.8rem', marginBottom: '0' }}>Welcome back, {userDetail.name}!</p>
                         <p style={{ fontSize: '0.8rem' }}>Ready to make today magical with some new gadgets?</p>
                     </div>
 
