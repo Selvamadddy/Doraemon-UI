@@ -6,8 +6,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./Login.css";
-import SignIn from "../../API/Login";
+import SignIn, { StatusApi } from "../../API/Login";
 import Logo from "../../Asset/Logo.png";
+import ActivateChatServer from "../ChatBot/Src/ActivateChatServer";
 
 interface ValidationState {
     isValid: boolean;
@@ -21,6 +22,7 @@ interface FailedState {
 
 export default function Login() {
     //#region States
+    const [isActive, setIsActive] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -116,6 +118,19 @@ export default function Login() {
         }
         setIsLoading(false);
     };
+
+    const updateIsActive = () =>
+    {
+        setIsActive(!isActive);
+    }
+    const BootUpApiCall = async () => {
+        
+         const response = await StatusApi();
+         if(response.success){
+            return true;
+         }
+        return false;
+    }
     //#endregion Input Handlers
 
     return (
@@ -131,7 +146,8 @@ export default function Login() {
                             <small className="text-secondary" style={{ fontSize: "1rem" }}>AI assistant</small>
                         </div>
                     </div>
-
+                    {!isActive  ? <ActivateChatServer updateIsActive ={updateIsActive} ApiCall={BootUpApiCall} ServerName=""/> :
+                    <>
                     {/* Login card */}
                     <div className="card d-flex flex-column m-3 align-items-center" style={{ backgroundColor: "rgba(255, 255, 255, 0.7)", width: "clamp(300px, 50%, 400px)" }}>
                         <h2 className="m-4">Login</h2>
@@ -216,6 +232,7 @@ export default function Login() {
                             </a>
                         </p>
                     </div>
+                    </> }
                 </div>
             </div>
         </div>
