@@ -3,20 +3,35 @@ import "./chat.css";
 
 interface Prop {
     updateIsActive: () => void;
+    ServerName : string;
+    ApiCall : () => Promise<boolean>;
 }
 
-export default function ActivateChatServer({ updateIsActive }: Prop) {
+export default function ActivateChatServer({ updateIsActive, ServerName, ApiCall }: Prop) {
     const [count, setCount] = useState(0);
 
     useEffect(() => {
-        if (count > 4) return;
 
-        const timerId = setTimeout(() => {
-            setCount((prev) => prev + 1);
-            console.log("Retry attempt:", count + 1);
-        }, 2000);
+       const funcall = async() =>{
+         if (count > 4) return;
+        const status = await ApiCall();
+            if(status){
+                updateIsActive();
+                setCount(5);
+            }
+            else{
+                setCount((prev) => prev + 1);
+            }
+       }
+       funcall();
 
-        return () => clearTimeout(timerId);
+        // const timerId = setTimeout(() => {
+        //     setCount((prev) => prev + 1);
+        //     console.log("Retry attempt:", count + 1);
+            
+        // }, 2000);
+
+        // return () => clearTimeout(timerId);
     }, [count]);
 
     const handleRetry = () => {
@@ -30,7 +45,7 @@ export default function ActivateChatServer({ updateIsActive }: Prop) {
             <div className="card shadow-lg p-4 text-center" style={{ width: "380px" }}>
 
                 <h4 className="text-danger mb-3">
-                    <i className="bi bi-exclamation-triangle"></i> ChatBot Server is Down
+                    <i className="bi bi-exclamation-triangle"></i> {ServerName} Server is Down
                 </h4>
 
                 {count < 5 ? (
@@ -63,7 +78,7 @@ export default function ActivateChatServer({ updateIsActive }: Prop) {
                         </p>
 
                         <div className="d-flex justify-content-center align-items-center">
-                            <button className="btn btn-primary rounded-circle big-circle-btn shadow" onClick={updateIsActive}>
+                            <button className="btn btn-primary rounded-circle big-circle-btn shadow" onClick={handleRetry}>
                                 <i className="bi bi-rocket-fill"></i>
                             </button>
                         </div>

@@ -23,10 +23,17 @@ export default function ChatPage() {
         setIsActive(!isActive);
     }
 
+    const BootUpApiCall = async() =>{
+         const timerId = setTimeout(() => {
+        }, 2000);
+         clearTimeout(timerId);
+        return false;
+    }
+
     return (
         <div className="chat-container">
             <ChatHeader isActive={isActive} />
-            {!isActive ? <ActivateChatServer updateIsActive ={updateIsActive}/> :
+            {!isActive ? <ActivateChatServer updateIsActive ={updateIsActive} ApiCall={BootUpApiCall} ServerName="ChatBot"/> :
                 <>
                     <div className="chat-body">
                         {messages.map(msg => (
