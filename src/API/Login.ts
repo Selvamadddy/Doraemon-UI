@@ -77,3 +77,12 @@ export async function RegisterApi(email : string, newPassword: string, name : st
     });
     return result;
 }
+
+export async function StatusApi(): Promise<ApiResponse<null>> {
+    const result = await ApiRequest<null>(`${base}/health`, {
+        method: "GET",
+        includeAuth: false,
+        includeSubscriptionKey: true
+    });
+    return result;
+}
