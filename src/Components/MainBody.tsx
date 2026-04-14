@@ -18,6 +18,7 @@ import { GetUserDetail } from "./Settings/API/ProfileSettingAPI";
 import { AddUserDetail } from "../ReduxManager/Slices/User/UserSlice";
 import { useToast } from "./Common/ErrorToast/ToastContext";
 import useTokenValidator from "../Hooks/UseTokenValidator";
+import GymScreen from "./GymTracker/Src/Common/GymScreen";
 
 export interface MainBodyProps {
     screen: string;
@@ -88,7 +89,7 @@ export default function MainBody({ screen }: MainBodyProps) {
             case 'To do Task':
                 return <ToDo />
             case 'Gym':
-                return <UnderConstruction />
+                return <GymScreen />
             case 'Expense tracker':
                 return <UnderConstruction />
             case 'Fish monitor':

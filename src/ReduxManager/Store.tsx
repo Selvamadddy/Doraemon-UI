@@ -4,6 +4,8 @@ import chatSlice from "./Slices/ChatSlice";
 import WidgetSlice from "./Slices/Dashboard/WidgetSlice";
 import ToDoTaskSlice from "./Slices/ToDoTask/ToDoTaskSlice";
 import userDetailSlice from "./Slices/User/UserSlice";
+import ExerciseSlice from "./Slices/GymTracker/ExerciseSlice"
+import WorkoutSlice from "./Slices/GymTracker/WorkoutSlice"
 
 export const store = configureStore({
   devTools: false,
@@ -12,7 +14,9 @@ export const store = configureStore({
     chat: chatSlice,
     widget: WidgetSlice,
     toDoTask : ToDoTaskSlice,
-    userDetail : userDetailSlice
+    userDetail : userDetailSlice,
+    exercise : ExerciseSlice,
+    workout : WorkoutSlice
   }
 });
 
