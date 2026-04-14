@@ -145,3 +145,80 @@ export async function ApiRequest<T>(apiName: string, options?: ApiRequestOptions
     };
   }
 }
+
+
+export async function LocalApiRequest<T>(apiName: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
+  try {
+    const {
+      method = "GET",
+      payload,
+      formData,
+      includeAuth = false,
+      includeSubscriptionKey = false,
+      customHeaders = {}
+    } = options || {};
+
+    const headers: Record<string, string> = {
+      ...customHeaders
+    };
+
+    if (!formData) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    if (includeAuth) {
+      const token = localStorage.getItem("auth_token");
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+    }
+
+    if (includeSubscriptionKey) {
+      headers["Ocp-Apim-Subscription-Key"] = import.meta.env.VITE_APIM_SUBSCRIPTION_KEY;
+    }
+
+    const response = await fetch(`https://localhost:32769${apiName}`, {
+      method,
+      headers,
+      body: formData ? formData : (payload ? JSON.stringify(payload) : undefined)
+    });
+
+    const status = response.status;
+
+    let data: T | null = null;
+
+    const contentType = response.headers.get("content-type");
+
+    if (contentType && contentType.includes("application/json")) {
+      const text = await response.text();
+      data = text ? (JSON.parse(text) as T) : null;
+    }
+
+    // if (response.status == 401) {
+    //    localStorage.removeItem("auth_token");
+    //    window.location.href = "/login";
+    // }
+
+    if (!response.ok) {
+      return {
+        success: false,
+        status,
+        data,
+        error: response.statusText
+      };
+    }
+
+    return {
+      success: true,
+      status,
+      data
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      error: error?.message || "Network error"
+    };
+  }
+}
