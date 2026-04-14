@@ -10,7 +10,7 @@ export default ({ mode }: { mode: string }) => {
     server: {
       proxy: {
         '/apim': {
-          target: 'env.VITE_API_URL',
+          target: env.VITE_API_URL,
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/apim/, ''),
         },
