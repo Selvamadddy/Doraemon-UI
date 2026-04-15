@@ -31,23 +31,23 @@ export default function ExerciseCard({exercise, removeExercise, cardData = newCa
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   const handleSetsChange = (e : React.ChangeEvent<HTMLInputElement>) =>{
-    const newValue = Number(e.target.value);
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, sets : newValue} : x )}))
+    let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
+    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, sets : value === "" ? 0 : Number(value)} : x )}))
   }
 
   const handleRepsChange = (e : React.ChangeEvent<HTMLInputElement>) =>{
-    const newValue = Number(e.target.value);
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, reps : newValue} : x )}))
+    let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
+    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, reps : value === "" ? 0 : Number(value)} : x )}))
   }
 
   const handleWeightChange = (e : React.ChangeEvent<HTMLInputElement>) =>{
-    const newValue = Number(e.target.value);
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, weight : newValue} : x )}))
+    let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
+    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, weight : value === "" ? 0 : Number(value)} : x )}))
   }
 
   const handleDurationChange = (e : React.ChangeEvent<HTMLInputElement>) =>{
-    const newValue = Number(e.target.value);
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, duration : newValue} : x )}))
+    let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
+    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, duration : value === "" ? 0 : Number(value)} : x )}))
   }
 
   const handleNoteChange = (e : string) =>{
@@ -67,7 +67,7 @@ export default function ExerciseCard({exercise, removeExercise, cardData = newCa
     <div className="card shadow-sm border-0 rounded-4 p-3 mt-3">
       <div className="d-flex justify-content-between align-items-start">
         <div className="d-flex align-items-center">
-          <img src={exercise == undefined ? "https://cdn-icons-png.flaticon.com/512/7922/7922326.png" : exercise.imageUrl} alt={exercise.name} style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover", background: "#e0e0e0", }} onClick={() => OpenExerciseModal(exercise)} />
+          <img src={exercise.imageUrl == "" ? "https://cdn-icons-png.flaticon.com/512/7922/7922326.png" : exercise.imageUrl} alt={exercise.name} style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover", background: "#e0e0e0", }} onClick={() => OpenExerciseModal(exercise)} />
           <div className="ms-3">
             <h5 className="mb-1 fw-semibold" onClick={() => OpenExerciseModal(exercise)}>{exercise.name}</h5>
             <small className="text-muted text-uppercase">
@@ -86,22 +86,22 @@ export default function ExerciseCard({exercise, removeExercise, cardData = newCa
 
           <div className="col-6 col-md-3">
             <label className="form-label small text-muted">SETS</label>
-            <input type="number" className="form-control text-center rounded-pill" value={cardData.sets} onChange={handleSetsChange}/>
+            <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={cardData.sets} onChange={handleSetsChange}/>
           </div>
 
           <div className="col-6 col-md-3">
             <label className="form-label small text-muted">REPS</label>
-            <input type="number" className="form-control text-center rounded-pill" value={cardData.reps} onChange={handleRepsChange}/>
+            <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={cardData.reps} onChange={handleRepsChange}/>
           </div>
 
          <div className="col-6 col-md-3">
             <label className="form-label small text-muted">Weight (Kg)</label>
-            <input type="number" className="form-control text-center rounded-pill" value={cardData.weight} onChange={handleWeightChange}/>
+            <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={cardData.weight} onChange={handleWeightChange}/>
          </div>
 
           <div className="col-6 col-md-3">
             <label className="form-label small text-muted">Duration (mins)</label>
-            <input type="number" className="form-control text-center rounded-pill" value={cardData.duration} onChange={handleDurationChange}/>
+            <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={cardData.duration} onChange={handleDurationChange}/>
          </div>
 
         </div>
