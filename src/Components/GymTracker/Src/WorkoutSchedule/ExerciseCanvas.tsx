@@ -3,7 +3,7 @@ import type { Exercise } from "../../Model/Exercise";
 import { useState } from "react";
 
 
-export default function ExerciseCanvas ({ exercises, AddExercise }: { exercises: Exercise[], AddExercise: (id :number) =>void})  {
+export default function ExerciseCanvas ({ exercises, AddExercise, selectedExercises }: { exercises: Exercise[], AddExercise: (id :number) =>void, selectedExercises : number[]})  {
      const [search, setSearch] = useState("");
      const filtered = exercises.filter((x) => x.name.toLowerCase().includes(search.toLowerCase()));
     return (
@@ -19,16 +19,16 @@ export default function ExerciseCanvas ({ exercises, AddExercise }: { exercises:
                 </div>
 
                 {filtered.map((exercise) => (
-                    <AddExerciseCard key={exercise.id} exercise={exercise} AddExercise={AddExercise} />
+                    <AddExerciseCard key={exercise.id} exercise={exercise} AddExercise={AddExercise} isAdded = {selectedExercises.filter(x => x === exercise.id).length > 0}/>
                 ))}
             </div>
         </div>
     );
 }
 
-const AddExerciseCard = ({ exercise, AddExercise }: { exercise: Exercise, AddExercise: (id :number) =>void}) => {
+const AddExerciseCard = ({ exercise, AddExercise, isAdded }: { exercise: Exercise, AddExercise: (id :number) =>void, isAdded : boolean}) => {
     return (
-        <div className="d-flex align-items-center justify-content-between py-2 px-3 rounded-pill mb-1" style={{ border: "1px solid #aeadad75" }}>
+        <div className="d-flex align-items-center justify-content-between py-2 px-3 rounded-pill mb-1" style={{ border: isAdded ? "2px solid green" : "1px solid #aeadad75" }}>
             <div className="d-flex align-items-center gap-3">
                 <img src={exercise.imageUrl == "" ? "alt" : exercise.imageUrl} alt={exercise.name} style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover", background: "#e0e0e0", }} />
 
@@ -43,9 +43,9 @@ const AddExerciseCard = ({ exercise, AddExercise }: { exercise: Exercise, AddExe
             </div>
 
             <button className="btn btn-light rounded-circle d-flex align-items-center justify-content-center"
-                style={{ width: 32, height: 32, padding: 0, border: "1px solid #e0e0e0" }}
+                style={{ width: 32, height: 32, padding: 0, border: isAdded ? "2px solid green" : "1px solid #e0e0e0" }}
                 onClick={() => AddExercise(exercise.id)}>
-                <FiPlus size={16} color="#555" />
+                <FiPlus size={16} color= {isAdded ? "green" : "#555"} />
             </button>
         </div>
     );
