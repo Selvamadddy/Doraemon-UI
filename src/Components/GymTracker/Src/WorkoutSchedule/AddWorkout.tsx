@@ -21,22 +21,17 @@ export default function AddWorkout({ workOut, setState }: props) {
 
   useEffect(() => {
     const CanSaveData = () => {
-      console.log(workOut.exercises);
       if (workOut.name == null || workOut.name == "" || workOut.name == undefined) {
         setDisableSave(true);
-        console.log("1");
       }
       else if (workOut.exercises == null || workOut.exercises == undefined || workOut.exercises.length <= 0) {
         setDisableSave(true);
-         console.log("2");
       }
       else if (workOut.workoutDate == null || workOut.workoutDate == undefined) {
         setDisableSave(true);
-         console.log("3");
       }
       else{
         setDisableSave(false);
-         console.log("4");
       }
     }
 
@@ -94,23 +89,11 @@ export default function AddWorkout({ workOut, setState }: props) {
     new Map(exercises.filter(x => workoutIds.has(x.id)).map(x => [x.muscleGroup, x])).values()
   );
 
-  const CanSaveData1 = (param: string) => {
-    if (param == "name" && !(workOut.name == null || workOut.name === "" || workOut.name == undefined)) {
-      setDisableSave(false);
-    }
-    else if (param == "exercises" && !(workOut.exercises == null || workOut.exercises == undefined || workOut.exercises.length <= 0 || workOut.exercises.map(x => x.reps <= 0 || x.sets <= 0).length > 0)) {
-      setDisableSave(false);
-    }
-    else if (param == "workoutDate" && !(workOut.workoutDate == null || workOut.workoutDate == undefined)) {
-      setDisableSave(false);
-    }
-  }
-
   return (
     <div className="p-4 border bg-white rounded-3">
       <div className="mb-4">
         <label className="text-secondary" style={{ fontSize: "10px", fontWeight: "700", letterSpacing: "1px" }}>
-          WORKOUT NAME
+          NAME
         </label>
         <TextInput label="" value={workOut.name} placeholder="Enter workout name.." onChange={handleNameChange} maxChars={30} rows={1} />
       </div>

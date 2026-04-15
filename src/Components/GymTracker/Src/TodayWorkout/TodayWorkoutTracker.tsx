@@ -26,18 +26,14 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
     const { showToast } = useToast();
 
     const todaySession = useMemo(() => {
-        const todayStr = new Date().toDateString();
-
         return (
             workOuts.find(x =>
-                new Date(x.workoutDate).toDateString() === todayStr
+                new Date(x.workoutDate).toDateString() === new Date().toDateString()
             ) ?? initialData
         );
     }, [workOuts]);
 
-    const selectedWorkoutExercise = todaySession?.exercises?.find(
-        x => x.id === selectedWorkoutExerciseId
-    );
+    const selectedWorkoutExercise = todaySession?.exercises?.find( x => x.id === selectedWorkoutExerciseId);
 
     const selectedExerciseData = useMemo(() => {
         return exercises.find(x => x.id === selectedWorkoutExercise?.id);
