@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-import { useAppDispatch, useAppSelector } from "../../../../Hooks/ReduxHook";
-import type { Exercise, GetDailyWorkoutsPayload, SaveWorkout, WorkoutExercise } from "../../Model/Exercise";
-import { useEffect, useState } from "react";
-import ExerciseCard from "./ExerciseCard";
-import AddWorkout from "./AddWorkout";
-import ExerciseCanvas from "./ExerciseCanvas";
-import { GetDailyWorkouts } from "../../Api/GymTrackerApi";
-=======
 import { useAppSelector } from "../../../../Hooks/ReduxHook";
 import type { SaveWorkout, WorkoutExercise } from "../../Model/Exercise";
 import { useState } from "react";
 import ExerciseCard from "./ExerciseCard";
 import AddWorkout from "./AddWorkout";
 import ExerciseCanvas from "./ExerciseCanvas";
->>>>>>> b77cc951b5cd8f19c89ee3165428bbb65846a14f
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const initialData: SaveWorkout = {
