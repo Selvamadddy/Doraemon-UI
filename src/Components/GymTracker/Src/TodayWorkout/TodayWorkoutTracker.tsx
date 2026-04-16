@@ -19,6 +19,7 @@ const initialData: SaveWorkout = {
 
 export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (screen: string) => void }) {
     const [selectedWorkoutExerciseId, setSelectedWorkoutExerciseId] = useState<number>();
+    const [savingStatus, SetSavingStatus] = useState(false);
 
     const exercises = useAppSelector(state => state.exercise);
     const workOuts = useAppSelector(state => state.workout);
@@ -36,7 +37,7 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
     const selectedWorkoutExercise = todaySession?.exercises?.find( x => x.id === selectedWorkoutExerciseId);
 
     const selectedExerciseData = useMemo(() => {
-        return exercises.find(x => x.id === selectedWorkoutExercise?.id);
+        return exercises.find(x => x.id === selectedWorkoutExercise?.exerciseId);
     }, [exercises, selectedWorkoutExercise]);
 
     const handleSelectedExercise = (id: number) => {
@@ -53,6 +54,7 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
 
             if(updatedExercise.status)
             {
+                SetSavingStatus(true);
                 var updatedSession = { ...todaySession, exercises: todaySession.exercises.map(x => x.id === id ? updatedExercise : x)};
                 const response = await SaveDailyWorkout(updatedSession);
                 if(response.status){
@@ -66,6 +68,7 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
                         showToast("Failed to save Workouts", "error");
                     }
                 }
+                SetSavingStatus(false);
             }
         }
     };
@@ -179,7 +182,7 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
                                     </div>
 
                                     <button className="btn btn-primary w-100 rounded-pill" onClick={() => handleSetCompletion(selectedWorkoutExercise.id)} disabled={selectedWorkoutExercise.sets <= selectedWorkoutExercise.completedSets}>
-                                        {selectedWorkoutExercise.sets > selectedWorkoutExercise.completedSets ? "Completed Current Set" : "Completed Exercise"}
+                                        {savingStatus ? "Saving..." : selectedWorkoutExercise.sets > selectedWorkoutExercise.completedSets ? "Completed Current Set" : "Completed Exercise"}
                                     </button>
 
                                 </div>
