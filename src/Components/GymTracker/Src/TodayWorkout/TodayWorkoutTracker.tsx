@@ -8,6 +8,7 @@ import NoWorkout from "./NoWorkout";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { SaveDailyWorkout } from "../../Api/GymTrackerApi";
 import { useToast } from "../../../Common/ErrorToast/ToastContext";
+import TextInput from "../Common/TextInput";
 
 const initialData: SaveWorkout = {
     id: 0,
@@ -34,7 +35,7 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
         );
     }, [workOuts]);
 
-    const selectedWorkoutExercise = todaySession?.exercises?.find( x => x.id === selectedWorkoutExerciseId);
+    const selectedWorkoutExercise = todaySession?.exercises?.find(x => x.id === selectedWorkoutExerciseId);
 
     const selectedExerciseData = useMemo(() => {
         return exercises.find(x => x.id === selectedWorkoutExercise?.exerciseId);
@@ -44,27 +45,24 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
         setSelectedWorkoutExerciseId(id);
     };
 
-    const handleSetCompletion = async(id: number) => {
+    const handleSetCompletion = async (id: number) => {
         const existing = todaySession.exercises.find(x => x.id === id);
 
         if (existing) {
-            var updatedExercise = {...existing, completedSets : (existing.completedSets || 0) + 1};
+            var updatedExercise = { ...existing, completedSets: (existing.completedSets || 0) + 1 };
             updatedExercise.status = updatedExercise.sets == updatedExercise.completedSets
-            dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise}));  
+            dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
 
-            if(updatedExercise.status)
-            {
+            if (updatedExercise.status) {
                 SetSavingStatus(true);
-                var updatedSession = { ...todaySession, exercises: todaySession.exercises.map(x => x.id === id ? updatedExercise : x)};
+                var updatedSession = { ...todaySession, exercises: todaySession.exercises.map(x => x.id === id ? updatedExercise : x) };
                 const response = await SaveDailyWorkout(updatedSession);
-                if(response.status){
+                if (response.status) {
                     const id = response.data;
-                    if(id != null && id != 0)
-                    {
+                    if (id != null && id != 0) {
                         showToast("Saved Workout", "success");
                     }
-                    else
-                    {
+                    else {
                         showToast("Failed to save Workouts", "error");
                     }
                 }
@@ -73,12 +71,48 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
         }
     };
 
+    const handleReset = async (id: number) => {
+        const existing = todaySession.exercises.find(x => x.id === id);
+
+        if (existing) {
+            var updatedExercise = { ...existing, completedSets: 0  };
+            updatedExercise.completedDuration = 0;
+            updatedExercise.completedReps = 0;
+            updatedExercise.completedWeight = 0;
+            updatedExercise.status = false;
+            
+            SetSavingStatus(true);
+            var updatedSession = { ...todaySession, exercises: todaySession.exercises.map(x => x.id === id ? updatedExercise : x) };
+            const response = await SaveDailyWorkout(updatedSession);
+            if (response.status) {
+                const id = response.data;
+                if (id != null && id != 0) {
+                    showToast("Saved Workout", "success");
+                    dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
+                }
+                else {
+                    showToast("Failed to save Workouts", "error");
+                }
+            }
+            SetSavingStatus(false);
+        }
+    };
+
     const handleCurrentWeight = (id: number, weight: number) => {
         const existing = todaySession.exercises.find(x => x.id === id);
 
         if (existing) {
-            const updatedExercise = { ...existing, weight: weight};
-            dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise}));
+            const updatedExercise = { ...existing, weight: weight };
+            dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
+        }
+    };
+
+    const handleNoteChange = (id: number, note: string) => {
+        const existing = todaySession.exercises.find(x => x.id === id);
+
+        if (existing) {
+            const updatedExercise = { ...existing, note: note };
+            dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
         }
     };
 
@@ -128,9 +162,12 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
                             </div>
 
 
-                            {selectedWorkoutExercise != undefined && <div className="col-lg-4">
+                            {selectedWorkoutExercise != undefined && <div className="col-lg-4 mt-2">
                                 <div className="card p-4 shadow border-0">
-                                    <h5 className="fw-bold mb-3">{selectedExerciseData?.name}</h5>
+                                    <div className="d-flex justify-content-between align-items-start">
+                                        <h5 className="fw-bold mb-3">{selectedExerciseData?.name}</h5>
+                                        {selectedWorkoutExercise.status && <button className="btn btn-sm border-0" onClick={() => handleReset(selectedWorkoutExercise.id)}><h5> ⟲</h5></button> }
+                                    </div>
 
                                     {/* progress bar */}
                                     <div className="text-center mb-3">
@@ -176,9 +213,8 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
 
                                     {/* Notes */}
                                     <div className="mb-3">
-                                        <small className="text-muted">COACH NOTES</small>
-                                        <textarea className="form-control" placeholder="How did this set feel?" />
-
+                                        <small className="text-muted">NOTES</small>
+                                        <TextInput label="" value={selectedWorkoutExercise.note} placeholder="How did this set feel?" onChange={(p) => handleNoteChange(selectedWorkoutExercise.id, p)} maxChars={100} rows={1} />
                                     </div>
 
                                     <button className="btn btn-primary w-100 rounded-pill" onClick={() => handleSetCompletion(selectedWorkoutExercise.id)} disabled={selectedWorkoutExercise.sets <= selectedWorkoutExercise.completedSets}>

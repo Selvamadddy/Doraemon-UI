@@ -14,6 +14,7 @@ interface props {
 }
 
 export default function AddWorkout({ workOut, setState }: props) {
+  const [savingData, setSavingData] = useState(false);
   const exercises = useAppSelector(state => state.exercise);
   const [disableSave, setDisableSave] = useState(true);
   const dispatch = useAppDispatch();
@@ -62,6 +63,7 @@ export default function AddWorkout({ workOut, setState }: props) {
 
   const handleSave = async () => {
     if (!disableSave) {
+      setSavingData(true);
       const response = await SaveDailyWorkout(workOut);
       if (response.status) {
         const id = response.data;
@@ -79,7 +81,7 @@ export default function AddWorkout({ workOut, setState }: props) {
           showToast("Failed to save Workouts", "error");
         }
       }
-
+      setSavingData(false);
     }
   }
 
@@ -137,7 +139,8 @@ export default function AddWorkout({ workOut, setState }: props) {
 
       <div className="mb-3 d-flex justify-content-between">
         <button className="btn btn-success border px-3 rounded-pill" onClick={handleSave} disabled={disableSave}>
-          Save
+          {savingData ? "Saving...  " : "Save"}
+          {savingData && <div className="spinner-grow spinner-grow-sm text-light" role="status"></div>}
         </button>
         <button className="btn btn-light border px-3 rounded-pill" onClick={handleClearData}>
           clear
