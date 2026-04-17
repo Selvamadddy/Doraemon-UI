@@ -57,7 +57,7 @@ export default function DailyWorkoutPlanner({ saveWorkOut, switchScreen }: Daily
             <div className="d-flex justify-content-end align-items-center mb-3">
                 <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={renderTooltip("View Today's workouts")}>
                     <div className="d-flex align-items-center border border-primary px-2 py-1 rounded-pill bg-white shadow-sm" onClick={() => switchScreen("TodayWorkout")}>
-                        <span className="fw-semibold" style={{ fontSize: "clamp(12px, 1.2vw, 16px)" }}>Today's 💪🏻</span>
+                        <span className="fw-semibold" style={{ fontSize: "clamp(12px, 1.2vw, 16px)" }}>{saveWorkOut == null ? "Today's 💪🏻" : "Back ⬅️"}</span>
                     </div>
                 </OverlayTrigger>
 
@@ -78,7 +78,7 @@ export default function DailyWorkoutPlanner({ saveWorkOut, switchScreen }: Daily
                                 {new Date(data.workoutDate).toDateString()} : {data.exercises == undefined ? 0 : data.exercises.length} Exercises
                             </span>
                         </div>
-                        <button type="button" className="btn btn-primary btn-sm rounded-pill" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" style={{ fontSize: "13px", height: "34px" }}>
+                        <button type="button" className="btn btn-primary btn-sm rounded-pill" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" style={{ fontSize: "13px", height: "40px" }}>
                             + Add Exercise
                         </button>
                     </div>

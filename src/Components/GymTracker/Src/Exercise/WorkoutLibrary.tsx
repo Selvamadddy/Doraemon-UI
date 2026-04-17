@@ -106,7 +106,7 @@ export default function WorkoutLibrary({ switchScreen }: { switchScreen: (screen
       <div className="d-flex justify-content-end align-items-center mb-3">
         <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={renderTooltip("View Today's workouts")}>
           <div className="d-flex align-items-center border border-primary px-2 py-1 rounded-pill bg-white shadow-sm" onClick={() => switchScreen("TodayWorkout" )}>
-            <span className="fw-semibold" style={{ fontSize: "clamp(12px, 1.2vw, 16px)" }}>View 🏋🏻‍♂️</span>
+            <span className="fw-semibold" style={{ fontSize: "clamp(12px, 1.2vw, 16px)" }}>Today 🏋🏻‍♂️</span>
           </div>
         </OverlayTrigger>
 
