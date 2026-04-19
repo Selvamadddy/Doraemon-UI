@@ -31,7 +31,7 @@ export default function AddWorkout({ workOut, setState }: props) {
       else if (workOut.workoutDate == null || workOut.workoutDate == undefined) {
         setDisableSave(true);
       }
-      else{
+      else {
         setDisableSave(false);
       }
     }
@@ -64,17 +64,24 @@ export default function AddWorkout({ workOut, setState }: props) {
   const handleSave = async () => {
     if (!disableSave) {
       setSavingData(true);
-      const response = await SaveDailyWorkout(workOut);
+      console.log(workOut);
+      const request = {...workOut, exercises: workOut.exercises.map(e => ({...e, id: e.isNew ? 0 : e.id,
+          sets: (e.sets || []).map(s => ({...s, id: s.isNew ? 0 : s.id}))
+        }))
+      };
+      
+      console.log(request);
+      const response = await SaveDailyWorkout(request);
       if (response.status) {
         const id = response.data;
         if (id != null) {
-         if(workOut.id <= 0){
-           workOut.id = id;
-          dispatch(AddWorkoutSlice(workOut));
-         }
-         else{
-          dispatch(UpdateWorkout(workOut));
-         }
+          if (workOut.id <= 0) {
+            workOut.id = id;
+            dispatch(AddWorkoutSlice(workOut));
+          }
+          else {
+            dispatch(UpdateWorkout(workOut));
+          }
           showToast("Saved Workouts", "success");
         }
         else {

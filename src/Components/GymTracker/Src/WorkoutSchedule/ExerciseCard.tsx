@@ -1,67 +1,89 @@
-import { useCallback, useState } from "react";
-import type { Exercise, SaveWorkout, WorkoutExercise } from "../../Model/Exercise";
+import { useCallback, useEffect, useState } from "react";
+import type { Exercise, SaveWorkout, WorkoutExercise, WorkoutSet } from "../../Model/Exercise";
 import TextInput from "../Common/TextInput";
 import ExerciseModal from "../Exercise/ExerciseModal";
 
 interface prop {
-  exercise : Exercise;
-  removeExercise: (id :number) =>void,
-  cardData : WorkoutExercise;
-  setState : React.Dispatch<React.SetStateAction<SaveWorkout>>
+  exercise: Exercise;
+  removeExercise: (id: number) => void,
+  cardData: WorkoutExercise;
+  setState: React.Dispatch<React.SetStateAction<SaveWorkout>>
 }
 
-const newCard : WorkoutExercise = {
-  id : 0,
+const newCard: WorkoutExercise = {
+  id: 0,
   exerciseId: 0,
-  reps : 0,
-  sets :0,
-  weight : 0,
-  duration : 0,
-  note : "",
+  set: 3,
+  sets: [],
+  note: "",
   completedSets: 0,
-  completedReps: 0,
-  completedDuration : 0,
-  completedWeight : 0,
-  status : false,
-  isUpdated : false
+  status: false,
+  isUpdated: false,
+  isNew: true
 }
 
-export default function ExerciseCard({exercise, removeExercise, cardData = newCard, setState} : prop) {
+const newSet: WorkoutSet = {
+  id: 0,
+  set: 0,
+  reps: 10,
+  weight: 0,
+  duration: 0,
+  completedReps: 0,
+  completedDuration: 0,
+  completedWeight: 0,
+  status: false,
+  isUpdated: false,
+  isNew:true
+}
+
+export default function ExerciseCard({ exercise, removeExercise, cardData = newCard, setState }: prop) {
   const [showExerciseDetail, setShowExerciseDetail] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
-  const handleSetsChange = (e : React.ChangeEvent<HTMLInputElement>) =>{
-    let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, sets : value === "" ? 0 : Number(value)} : x )}))
-  }
+  const handleSetsChange = (newCount: number, isAdd: boolean) => {
+    if(isAdd){
+      const newSetValue = {...newSet, id : newCount, set : newCount};
+      setState(prev => ({...prev, exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, set : newCount, sets : [...x.sets, newSetValue]} : x)}))
+    }
+    else{
+      setState(prev => ({...prev, exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, set : newCount, sets : x.sets.slice(0, -1)} : x)}))
+    }
+  };
 
-  const handleRepsChange = (e : React.ChangeEvent<HTMLInputElement>) =>{
-    let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, reps : value === "" ? 0 : Number(value)} : x )}))
-  }
+  const parseNumber = (value: string): number => {
+    const num = Number(value);
+    return Number.isNaN(num) || num < 0 ? 0 : num;
+  };
 
-  const handleWeightChange = (e : React.ChangeEvent<HTMLInputElement>) =>{
-    let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, weight : value === "" ? 0 : Number(value)} : x )}))
-  }
+  const handleUpdateSetField = (exerciseId: number, setId: number, field: "reps" | "weight" | "duration", value: string) => {
+    const parsedValue = parseNumber(value);
 
-  const handleDurationChange = (e : React.ChangeEvent<HTMLInputElement>) =>{
-    let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, duration : value === "" ? 0 : Number(value)} : x )}))
-  }
+    setState(prev => ({ ...prev, exercises: prev.exercises.map(ex => {
+        if (ex.id !== exerciseId) return ex;
+        return {
+          ...ex,
+          sets: (ex.sets ?? []).map(s =>
+            s.id === setId
+              ? { ...s, [field]: parsedValue }
+              : s
+          )
+        };
+      })
+    }));
+  };
 
-  const handleNoteChange = (e : string) =>{
-    setState(prev => ({...prev,exercises : prev.exercises.map(x => x.id == cardData.id ? {...x, note : e} : x )}))
+  const handleNoteChange = (e: string) => {
+    setState(prev => ({ ...prev, exercises: prev.exercises.map(x => x.id == cardData.id ? { ...x, note: e } : x) }))
   }
 
   const OpenExerciseModal = useCallback((exercise: Exercise) => {
-      setSelectedExercise(exercise);
-      setShowExerciseDetail(true);
-    }, []);
-  
-    const CloseExerciseModal = useCallback(() => {
-      setShowExerciseDetail(false);
-    }, []);
+    setSelectedExercise(exercise);
+    setShowExerciseDetail(true);
+  }, []);
+
+  const CloseExerciseModal = useCallback(() => {
+    setShowExerciseDetail(false);
+  }, []);
 
   return (
     <div className="card shadow-sm border-0 rounded-4 p-3 mt-3">
@@ -81,31 +103,46 @@ export default function ExerciseCard({exercise, removeExercise, cardData = newCa
         </button>
       </div>
 
-      <div className="bg-light rounded-4 p-3 mt-3">
-        <div className="row g-3 text-center">
-
-          <div className="col-6 col-md-3">
-            <label className="form-label small text-muted">SETS</label>
-            <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={cardData.sets} onChange={handleSetsChange}/>
-          </div>
-
-          <div className="col-6 col-md-3">
-            <label className="form-label small text-muted">REPS</label>
-            <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={cardData.reps} onChange={handleRepsChange}/>
-          </div>
-
-         <div className="col-6 col-md-3">
-            <label className="form-label small text-muted">Weight (Kg)</label>
-            <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={cardData.weight} onChange={handleWeightChange}/>
-         </div>
-
-          <div className="col-6 col-md-3">
-            <label className="form-label small text-muted">Duration (mins)</label>
-            <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={cardData.duration} onChange={handleDurationChange}/>
-         </div>
-
+      <div className="mt-3" style={{ width: "13rem" }}>
+        <small className="text-muted">SETS</small>
+        <div className="input-group">
+          <button className="btn btn-outline-secondary" onClick={() => handleSetsChange(cardData.set - 1, false)} disabled={cardData.set <= 1}>
+            -
+          </button>
+          <input className="form-control text-center" value={cardData.set} readOnly />
+          <button className="btn btn-outline-secondary" onClick={() => handleSetsChange(cardData.set + 1, true)} disabled={cardData.set >= 5}>
+            +
+          </button>
         </div>
       </div>
+
+      {cardData.sets && cardData.sets != undefined && cardData.sets?.map(x => (
+        <div key={x.set} className="bg-light rounded-4 p-3 mt-2">
+          <div className="row g-3 text-center">
+
+            <div className="col-6 col-md-3">
+              <label className="form-label small text-muted">SET</label>
+              <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={x.set} disabled={true} />
+            </div>
+
+            <div className="col-6 col-md-3">
+              <label className="form-label small text-muted">REPS</label>
+              <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={x.reps} onChange={(e) => handleUpdateSetField(cardData.id, x.id, "reps", e.target.value)} />
+            </div>
+
+            <div className="col-6 col-md-3">
+              <label className="form-label small text-muted">Weight (Kg)</label>
+              <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={x.weight} onChange={(e) => handleUpdateSetField(cardData.id, x.id, "weight", e.target.value)} />
+            </div>
+
+            <div className="col-6 col-md-3">
+              <label className="form-label small text-muted">Duration (mins)</label>
+              <input type="text" inputMode="numeric" className="form-control text-center rounded-pill" value={x.duration} onChange={(e) => handleUpdateSetField(cardData.id, x.id, "duration", e.target.value)} />
+            </div>
+
+          </div>
+        </div>
+      ))}
 
       <div className="mt-3 px-4">
         <TextInput label="" value={cardData.note} placeholder="Add specific notes for this exercise..." onChange={(p) => handleNoteChange(p)} maxChars={100} rows={1} />

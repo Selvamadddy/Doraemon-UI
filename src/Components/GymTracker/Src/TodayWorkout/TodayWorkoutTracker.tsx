@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import type { Exercise, SaveWorkout } from "../../Model/Exercise";
 import { useAppDispatch, useAppSelector } from "../../../../Hooks/ReduxHook";
 import TodayExerciseCard from "./TodayExerciseCard";
-import DailyWorkoutPlanner from "../WorkoutSchedule/DailyWorkoutPlanner";
 import { UpdateWorkoutExercise } from "../../../../ReduxManager/Slices/GymTracker/WorkoutSlice";
 import NoWorkout from "./NoWorkout";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -28,11 +27,11 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
     const { showToast } = useToast();
 
     const todaySession = useMemo(() => {
-        return (
-            workOuts.find(x =>
-                new Date(x.workoutDate).toDateString() === new Date().toDateString()
-            ) ?? initialData
-        );
+        return (workOuts.find(x => new Date(x.workoutDate).toDateString() === new Date().toDateString()) ?? initialData);
+    }, [workOuts]);
+
+    const OriginaltodaySession = useMemo(() => {
+        return (workOuts.find(x => new Date(x.workoutDate).toDateString() === new Date().toDateString()) ?? initialData);
     }, [workOuts]);
 
     const selectedWorkoutExercise = todaySession?.exercises?.find(x => x.id === selectedWorkoutExerciseId);
@@ -41,68 +40,122 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
         return exercises.find(x => x.id === selectedWorkoutExercise?.exerciseId);
     }, [exercises, selectedWorkoutExercise]);
 
+    const currentSet = useMemo(() => {
+        const set = selectedWorkoutExercise?.sets.find(x => !x.status);
+        return set == undefined ? selectedWorkoutExercise?.sets[0] : set;
+    }, [exercises, selectedWorkoutExercise]);
+
+    const currentWeight = useMemo(() => {
+        return currentSet == undefined ? 0 : currentSet.completedWeight > 0 ? currentSet.completedWeight : currentSet.weight;
+    }, [currentSet]);
+
+    const currentRep = useMemo(() => {
+        return currentSet == undefined ? 0 : currentSet.completedReps > 0 ? currentSet.completedReps : currentSet.reps;
+    }, [currentSet]);
+
     const handleSelectedExercise = (id: number) => {
         setSelectedWorkoutExerciseId(id);
     };
 
-    const handleSetCompletion = async (id: number) => {
-        const existing = todaySession.exercises.find(x => x.id === id);
+    const handleSetCompletion = async (exerciseId: number, setId: number) => {
+        const existing = todaySession.exercises.find(x => x.id === exerciseId);
 
-        if (existing) {
-            var updatedExercise = { ...existing, completedSets: (existing.completedSets || 0) + 1 };
-            updatedExercise.status = updatedExercise.sets == updatedExercise.completedSets
-            dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
+        if (!existing) return;
 
-            if (updatedExercise.status) {
-                SetSavingStatus(true);
-                var updatedSession = { ...todaySession, exercises: todaySession.exercises.map(x => x.id === id ? updatedExercise : x) };
-                const response = await SaveDailyWorkout(updatedSession);
-                if (response.status) {
-                    const id = response.data;
-                    if (id != null && id != 0) {
-                        showToast("Saved Workout", "success");
-                    }
-                    else {
-                        showToast("Failed to save Workouts", "error");
-                    }
-                }
-                SetSavingStatus(false);
-            }
-        }
-    };
+        const updatedSets = existing.sets.map(s => s.id === setId ? { ...s, status: true, isUpdated: true } : s);
+        const completedSets = updatedSets.filter(s => s.status).length;
+        const isExerciseCompleted = updatedSets.every(s => s.status);
+        const updatedExercise = { ...existing, sets: updatedSets, completedSets, status: isExerciseCompleted, isUpdated: true };
 
-    const handleReset = async (id: number) => {
-        const existing = todaySession.exercises.find(x => x.id === id);
+        dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
 
-        if (existing) {
-            var updatedExercise = { ...existing, completedSets: 0  };
-            updatedExercise.completedDuration = 0;
-            updatedExercise.completedReps = 0;
-            updatedExercise.completedWeight = 0;
-            updatedExercise.status = false;
-            
+        const updatedSession = { ...todaySession, exercises: todaySession.exercises.map(x => x.id === exerciseId ? updatedExercise : x) };
+
+        try {
             SetSavingStatus(true);
-            var updatedSession = { ...todaySession, exercises: todaySession.exercises.map(x => x.id === id ? updatedExercise : x) };
             const response = await SaveDailyWorkout(updatedSession);
-            if (response.status) {
-                const id = response.data;
-                if (id != null && id != 0) {
-                    showToast("Saved Workout", "success");
-                    dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
-                }
-                else {
-                    showToast("Failed to save Workouts", "error");
-                }
+            if (response.status && response.data) {
+                showToast("Saved", "success");
+            } else {
+                showToast("Save failed", "error");
             }
+        } catch (err) {
+            showToast("Error saving workout", "error");
+        } finally {
             SetSavingStatus(false);
         }
     };
 
-    const handleCurrentWeight = (id: number, weight: number) => {
+    const handleReset = async (exerciseId: number) => {
+
+        const existing = todaySession.exercises.find(x => x.id === exerciseId);
+        if (!existing) return;
+
+        // 1. Reset all sets
+        const resetSets = existing.sets.map(s => ({
+            ...s,
+            completedReps: 0,
+            completedWeight: 0,
+            completedDuration: 0,
+            status: false,
+            isUpdated: true
+        }));
+
+        // 2. Reset exercise
+        const updatedExercise = {
+            ...existing,
+            sets: resetSets,
+            completedSets: 0,
+            status: false,
+            isUpdated: true
+        };
+
+        // 3. Update session
+        const updatedSession = {
+            ...todaySession,
+            exercises: todaySession.exercises.map(x =>
+                x.id === exerciseId ? updatedExercise : x
+            )
+        };
+
+        try {
+            SetSavingStatus(true);
+
+            const response = await SaveDailyWorkout(updatedSession);
+
+            if (response.status && response.data) {
+                showToast("Workout Reset", "success");
+
+                // 4. Update redux AFTER success
+                dispatch(UpdateWorkoutExercise({
+                    workoutid: todaySession.id,
+                    exercise: updatedExercise
+                }));
+            } else {
+                showToast("Failed to reset workout", "error");
+            }
+
+        } catch (err) {
+            showToast("Error resetting workout", "error");
+        } finally {
+            SetSavingStatus(false);
+        }
+    };
+
+    const handleCurrentWeight = (id: number, setId: number, weight: number) => {
         const existing = todaySession.exercises.find(x => x.id === id);
 
-        if (existing) {
-            const updatedExercise = { ...existing, weight: weight };
+        if (existing && existing != undefined) {
+            const updatedExercise = { ...existing, sets: existing.sets.map(s => s.id === setId ? { ...s, completedWeight: weight, isUpdated: true } : s) };
+            dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
+        }
+    };
+
+    const handleCurrentRep = (id: number, setId: number, rep: number) => {
+        const existing = todaySession.exercises.find(x => x.id === id);
+
+        if (existing && existing != undefined) {
+            const updatedExercise = { ...existing, sets: existing.sets.map(s => s.id === setId ? { ...s, completedReps: rep, isUpdated: true } : s) };
             dispatch(UpdateWorkoutExercise({ workoutid: todaySession.id, exercise: updatedExercise }));
         }
     };
@@ -128,7 +181,6 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
                 <NoWorkout switchScreen={switchScreen} />
                 :
                 <>
-
                     <div className="container-fluid p-4">
                         <div className="row">
                             <div className="col-lg-8">
@@ -162,18 +214,18 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
                             </div>
 
 
-                            {selectedWorkoutExercise != undefined && <div className="col-lg-4 mt-2">
+                            {selectedWorkoutExercise != undefined && currentSet != undefined && <div className="col-lg-4 mt-2">
                                 <div className="card p-4 shadow border-0">
                                     <div className="d-flex justify-content-between align-items-start">
                                         <h5 className="fw-bold mb-3">{selectedExerciseData?.name}</h5>
-                                        {selectedWorkoutExercise.status && <button className="btn btn-sm border-0" onClick={() => handleReset(selectedWorkoutExercise.id)}><h5> ⟲</h5></button> }
+                                        {selectedWorkoutExercise.status && <button className="btn btn-sm border-0" onClick={() => handleReset(selectedWorkoutExercise.id)}><h5> <i className="bi bi-arrow-counterclockwise"></i></h5></button>}
                                     </div>
 
                                     {/* progress bar */}
                                     <div className="text-center mb-3">
                                         <div className="rounded-circle border border-4 border-primary d-flex align-items-center justify-content-center mx-auto"
                                             style={{ width: 120, height: 120 }}>
-                                            <h3 className="fw-bold"> {selectedWorkoutExercise.completedSets}/{selectedWorkoutExercise?.sets} </h3>
+                                            <h3 className="fw-bold"> {selectedWorkoutExercise.completedSets}/{selectedWorkoutExercise?.set} </h3>
                                         </div>
                                         <small className="text-muted">SETS DONE</small>
                                     </div>
@@ -182,11 +234,25 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
                                     <div className="mb-3">
                                         <small className="text-muted">CURRENT WEIGHT (KG)</small>
                                         <div className="input-group">
-                                            <button className="btn btn-outline-secondary" onClick={() => handleCurrentWeight(selectedWorkoutExercise.id, selectedWorkoutExercise.weight - 1)}>
+                                            <button className="btn btn-outline-secondary" onClick={() => handleCurrentWeight(selectedWorkoutExercise.id, currentSet.id, currentWeight - 1)} disabled={currentWeight <= 1 || currentSet.status}>
                                                 -
                                             </button>
-                                            <input className="form-control text-center" value={selectedWorkoutExercise?.weight} readOnly />
-                                            <button className="btn btn-outline-secondary" onClick={() => handleCurrentWeight(selectedWorkoutExercise.id, selectedWorkoutExercise.weight + 1)}>
+                                            <input className="form-control text-center" value={currentWeight} readOnly />
+                                            <button className="btn btn-outline-secondary" onClick={() => handleCurrentWeight(selectedWorkoutExercise.id, currentSet.id, currentWeight + 1)} disabled={currentSet.status}>
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* REPS TRACKER */}
+                                    <div className="mb-3">
+                                        <small className="text-muted">REPS TRACKER</small>
+                                        <div className="input-group">
+                                            <button className="btn btn-outline-secondary" onClick={() => handleCurrentRep(selectedWorkoutExercise.id, currentSet.id, currentRep - 1)} disabled={currentRep <= 1 || currentSet.status}>
+                                                -
+                                            </button>
+                                            <input className="form-control text-center" value={currentRep} readOnly />
+                                            <button className="btn btn-outline-secondary" onClick={() => handleCurrentRep(selectedWorkoutExercise.id, currentSet.id, currentRep + 1)} disabled={currentSet.status}>
                                                 +
                                             </button>
                                         </div>
@@ -194,31 +260,24 @@ export default function TodayWorkoutTracker({ switchScreen }: { switchScreen: (s
 
                                     {/* sets and reps */}
                                     <div className="mb-3">
-                                        <small className="text-muted">REPS TRACKER</small>
+                                        <small className="text-muted">SETS & REPS</small>
                                         <div className="d-flex gap-2 mt-2">
-                                            {Array.from({ length: selectedWorkoutExercise.completedSets }, (_, i) => (
-                                                <span key={i} className="badge bg-primary p-3 rounded-circle">
-                                                    {selectedWorkoutExercise.reps}
+                                            {selectedWorkoutExercise.sets.map(x =>
+                                                <span key={x.id} className={`badge ${x.status ? "bg-primary" : "bg-light text-dark"} p-3 rounded-circle`}>
+                                                    {x.completedReps > 0 ? x.completedReps : x.reps}
                                                 </span>
-                                            ))}
-
-                                            {Array.from({ length: selectedWorkoutExercise.sets - selectedWorkoutExercise.completedSets }, (_, i) => (
-                                                <span className="badge bg-light text-dark p-3 rounded-circle">
-                                                    {selectedWorkoutExercise.reps}
-                                                </span>
-                                            ))}
-
+                                            )}
                                         </div>
                                     </div>
 
                                     {/* Notes */}
                                     <div className="mb-3">
                                         <small className="text-muted">NOTES</small>
-                                        <TextInput label="" value={selectedWorkoutExercise.note} placeholder="How did this set feel?" onChange={(p) => handleNoteChange(selectedWorkoutExercise.id, p)} maxChars={100} rows={1} />
+                                        <TextInput label="" value={selectedWorkoutExercise.note} placeholder="How did this set feel?" onChange={(p) => handleNoteChange(selectedWorkoutExercise.id, p)} maxChars={100} rows={1} disabled={currentSet.status}/>
                                     </div>
 
-                                    <button className="btn btn-primary w-100 rounded-pill" onClick={() => handleSetCompletion(selectedWorkoutExercise.id)} disabled={selectedWorkoutExercise.sets <= selectedWorkoutExercise.completedSets}>
-                                        {savingStatus ? "Saving..." : selectedWorkoutExercise.sets > selectedWorkoutExercise.completedSets ? "Completed Current Set" : "Completed Exercise"}
+                                    <button className="btn btn-primary w-100 rounded-pill" onClick={() => handleSetCompletion(selectedWorkoutExercise.id, currentSet.id)} disabled={selectedWorkoutExercise.set <= selectedWorkoutExercise.completedSets}>
+                                        {savingStatus ? "Saving..." : selectedWorkoutExercise.set > selectedWorkoutExercise.completedSets ? "Completed Current Set" : "Completed Exercise"}
                                     </button>
 
                                 </div>
