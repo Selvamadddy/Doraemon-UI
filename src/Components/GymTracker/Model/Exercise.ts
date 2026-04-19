@@ -45,17 +45,27 @@ export interface SaveWorkout{
 export interface WorkoutExercise{
   id: number;
   exerciseId : number;
-  sets : number;
+  set : number;
+  sets : WorkoutSet[];
   completedSets: number;
+  note: string;
+  status: boolean;
+  isUpdated: boolean;
+  isNew: boolean;
+}
+
+export interface WorkoutSet{
+  id : number,
+  set : number;
   reps: number;
   completedReps: number;
   weight: number;
   completedWeight: number;
   duration: number;
   completedDuration: number;
-  note: string;
   status: boolean;
   isUpdated: boolean;
+  isNew: boolean;
 }
 
 export interface GetDailyWorkoutsPayload{

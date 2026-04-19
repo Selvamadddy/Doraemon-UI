@@ -1,6 +1,6 @@
 import { useAppSelector } from "../../../../Hooks/ReduxHook";
-import type { SaveWorkout, WorkoutExercise } from "../../Model/Exercise";
-import { useState } from "react";
+import type { SaveWorkout, WorkoutExercise, WorkoutSet } from "../../Model/Exercise";
+import { useEffect, useState } from "react";
 import ExerciseCard from "./ExerciseCard";
 import AddWorkout from "./AddWorkout";
 import ExerciseCanvas from "./ExerciseCanvas";
@@ -19,25 +19,41 @@ interface DailyWorkoutPlannerprops {
     switchScreen: (screen: string) => void;
 };
 
+const AddNewSet = (id : number) :WorkoutSet  =>{
+  return {
+  id: id,
+  set: id,
+  reps : 10,
+  weight: 0,
+  duration: 0,
+  completedReps: 0,
+  completedDuration: 0,
+  completedWeight: 0,
+  status: false,
+  isUpdated : false,
+  isNew:true
+};
+}
+
 export default function DailyWorkoutPlanner({ saveWorkOut, switchScreen }: DailyWorkoutPlannerprops) {
     const [data, setData] = useState<SaveWorkout>(saveWorkOut ?? initialData);
     const exercises = useAppSelector(state => state.exercise);
+
+    useEffect(() => {
+      console.log(data);
+    }, [data]);
 
     const handleAddExercise = (id: number) => {
         const newExercise: WorkoutExercise = {
             id: data.exercises.length + 1,
             exerciseId: id,
-            sets: 0,
+            set: 3,
+            sets: [AddNewSet(1), AddNewSet(2), AddNewSet(3)],
             completedSets: 0,
-            reps: 0,
-            completedReps: 0,
-            weight: 0,
-            completedWeight: 0,
-            duration: 0,
-            completedDuration: 0,
             note: "",
             status: false,
-            isUpdated: true
+            isUpdated: true,
+            isNew: true
         };
         setData(prevData => ({ ...prevData, exercises: [...prevData.exercises, newExercise] }));
     }

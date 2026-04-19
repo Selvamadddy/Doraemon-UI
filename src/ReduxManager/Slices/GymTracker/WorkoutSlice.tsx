@@ -19,7 +19,6 @@ const workoutSlice = createSlice({
             return state.map(workout => workout.id === action.payload.id ? { ...action.payload }: workout);
         },
 
-        // Replace all exercises for a workout
         AddWorkoutExercises(state, action: PayloadAction<{ workoutid: number; exercises: WorkoutExercise[] }>) 
         {
             return state.map(workout => workout.id === action.payload.workoutid ? {...workout, exercises: [...action.payload.exercises],} : workout);
@@ -40,7 +39,6 @@ const workoutSlice = createSlice({
             );
         },
 
-        // Update exercise inside a workout
         UpdateWorkoutExercise(state, action: PayloadAction<{ workoutid: number; exercise: WorkoutExercise }>) {
             return state.map(workout => {
                 if (workout.id !== action.payload.workoutid) return workout;
